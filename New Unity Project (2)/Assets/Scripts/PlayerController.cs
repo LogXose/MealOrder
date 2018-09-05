@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-
     NavMeshAgent agent;
     Animator animator;
     public GameObject Body;
@@ -15,12 +14,19 @@ public class PlayerController : MonoBehaviour
     bool faster = false;
     public float SPEED = 12.5f;
     public GameObject inventory;
-    bool inventoryOpen = false;
+    GameObject dropDown;
+    public static GameObject current;
+    public bool inventoryOpen = false;
+    public GameObject marketInventory;
+    public bool marketInventoryOpen = false;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = Body.GetComponent<Animator>();
+        dropDown = GameObject.Find("Dropdown");
+        inventory.SetActive(false);
+        marketInventory.SetActive(false);
     }
 
     void Update()
@@ -28,7 +34,7 @@ public class PlayerController : MonoBehaviour
         Body.transform.localPosition = Vector3.zero;
         if (Input.GetMouseButtonDown(0))
         {
-            if (!inventoryOpen)
+            if (!inventoryOpen && !marketInventoryOpen)
             {
                 if (Time.time < InitialTouch + 0.5f)
                 {
@@ -57,6 +63,51 @@ public class PlayerController : MonoBehaviour
                                 inventoryOpen = true;
                                 inventory.SetActive(true);
                                 inventory.transform.position = Input.mousePosition;
+                                current = hit.transform.gameObject;
+                                dropDown.GetComponent<Dropdown>().options.Clear();
+                                int iterator = 0;
+                                foreach (GameObject item in hit.transform.GetComponent<Station>().Outputs)
+                                {
+                                    if(iterator == 0)
+                                    {
+                                        dropDown.transform.GetChild(0).GetComponent<Text>().text = item.name;
+                                        iterator = 5;
+                                    }
+                                    dropDown.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData()
+                                    { text = item.name });
+                                }
+                            }
+                        }else if (hit.transform.parent.CompareTag("station"))
+                        {
+                            if (Vector3.Magnitude(hit.point - transform.position) < 10)
+                            {
+                                inventoryOpen = true;
+                                inventory.SetActive(true);
+                                inventory.transform.position = Input.mousePosition;
+                                current = hit.transform.parent.gameObject;
+                                dropDown.GetComponent<Dropdown>().options.Clear();
+                                int iterator = 0;
+                                foreach (GameObject item in hit.transform.parent.GetComponent<Station>().Outputs)
+                                {
+                                    if (iterator == 0)
+                                    {
+                                        dropDown.transform.GetChild(0).GetComponent<Text>().text = item.name;
+                                        iterator = 5;
+                                    }
+                                    dropDown.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData()
+                                    { text = item.name });
+                                }
+                            }
+                        }else if (hit.transform.CompareTag("market"))
+                        {
+                            if (Vector3.Magnitude(hit.point - transform.position) < 30)
+                            {
+                                marketInventoryOpen = true;
+                                marketInventory.SetActive(true);
+                                marketInventory.transform.position = 
+                                    new Vector3(Screen.width/2-marketInventory.GetComponent<RectTransform>().rect.width
+                                    ,Screen.height/2- marketInventory.GetComponent<RectTransform>().rect.y);
+                                current = hit.transform.gameObject;
                             }
                         }
                         agent.SetDestination(hit.point);
@@ -71,17 +122,33 @@ public class PlayerController : MonoBehaviour
                 ped.position = Input.mousePosition;
                 List<RaycastResult> results = new List<RaycastResult>();
                 gr.Raycast(ped, results);
+                GraphicRaycaster gr2 = marketInventory.GetComponent<GraphicRaycaster>();
+                PointerEventData ped2 = new PointerEventData(null);
+                ped2.position = Input.mousePosition;
+                List<RaycastResult> results2 = new List<RaycastResult>();
+                gr2.Raycast(ped2, results2);
                 if (results.Count > 0)
                 {
                     foreach (var item in results)
                     {
                         //menu station show
+
                     }
+                }
+                else if (results2.Count > 0)
+                {
+
                 }
                 else
                 {
+                    if (inventoryOpen)
+                    {
+                        ImageCreator.Closure();
+                    }
                     inventoryOpen = false;
+                    marketInventoryOpen = false;
                     inventory.SetActive(false);
+                    marketInventory.SetActive(false);
                 }
             }
         }
@@ -94,9 +161,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             animator.SetFloat("Speed_f", 0);
-        }
-
+        }   
     }
-
 
 }
