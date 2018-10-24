@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
     public bool inventoryOpen = false;
     public GameObject marketInventory;
     public bool marketInventoryOpen = false;
-
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -34,7 +33,7 @@ public class PlayerController : MonoBehaviour
         Body.transform.localPosition = Vector3.zero;
         if (Input.GetMouseButtonDown(0))
         {
-            if (!inventoryOpen && !marketInventoryOpen)
+            if (!inventoryOpen && !marketInventoryOpen && !OrdersMenuController.open)
             {
                 if (Time.time < InitialTouch + 0.5f)
                 {
@@ -110,6 +109,14 @@ public class PlayerController : MonoBehaviour
                                 current = hit.transform.gameObject;
                             }
                         }
+                        else if (hit.transform.CompareTag("delivery"))
+                        {
+                            if (Vector3.Magnitude(hit.point - transform.position) < 30)
+                            {
+                                OrdersMenuController.open = true;
+                                OrdersMenuController.atOrderStation = true;
+                            }
+                        }
                         agent.SetDestination(hit.point);
                     }
                 }
@@ -127,6 +134,11 @@ public class PlayerController : MonoBehaviour
                 ped2.position = Input.mousePosition;
                 List<RaycastResult> results2 = new List<RaycastResult>();
                 gr2.Raycast(ped2, results2);
+                /*GraphicRaycaster gr3 = inventory.GetComponent<GraphicRaycaster>();
+                PointerEventData ped3 = new PointerEventData(null);
+                ped3.position = Input.mousePosition;
+                List<RaycastResult> results3 = new List<RaycastResult>();
+                gr3.Raycast(ped3, results3);*/
                 if (results.Count > 0)
                 {
                     foreach (var item in results)
@@ -139,6 +151,10 @@ public class PlayerController : MonoBehaviour
                 {
 
                 }
+                /*else if (results3.Count > 0)
+                {
+
+                }*/
                 else
                 {
                     if (inventoryOpen)
@@ -149,6 +165,8 @@ public class PlayerController : MonoBehaviour
                     marketInventoryOpen = false;
                     inventory.SetActive(false);
                     marketInventory.SetActive(false);
+                    /*OrdersMenuController.open = false;
+                    OrdersMenuController.atStation = false;*/
                 }
             }
         }

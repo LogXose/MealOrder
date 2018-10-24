@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryOfPlayer : MonoBehaviour {
-
+    public static int Money = 500;
     public class InventorySlot
     {
         public enum MaterialType
@@ -53,6 +53,7 @@ public class InventoryOfPlayer : MonoBehaviour {
 
     public GameObject[] slotUIs;
     public GameObject[] slotUIsCopy;
+    public GameObject[] slotUIsDelivery;
     public Sprite defaultSprite;
 
     public static void Transaction(GameObject TypeOfItem)
@@ -119,9 +120,13 @@ public class InventoryOfPlayer : MonoBehaviour {
             }
         }
     }
-
+    public GameObject nuggetKahretsin;//iby
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.N))//iby
+        {
+            Transaction(nuggetKahretsin);
+        }
         for(int i = 0; i < 4; i++)
         {
             if(slots[i].typeOfItem != null)
@@ -136,8 +141,20 @@ public class InventoryOfPlayer : MonoBehaviour {
                 image.GetComponent<Image>().sprite = slots[i].GetSprite();
                 image.transform.localScale = Vector3.one * 0.4f;
                 label.GetComponent<Text>().text = slots[i].count.ToString();
+                if (OrdersMenuController.atOrderStation)
+                {
+                    image = slotUIsDelivery[i].transform.GetChild(0).gameObject;
+                    label = slotUIsDelivery[i].transform.GetChild(1).GetChild(0).gameObject;
+                    image.GetComponent<Image>().sprite = slots[i].GetSprite();
+                    image.transform.localScale = Vector3.one * 0.4f;
+                    label.GetComponent<Text>().text = slots[i].count.ToString();
+                    slotUIsDelivery[i].GetComponent<PlayerSlot>().represent = slots[i].typeOfItem;
+                    slotUIsDelivery[i].GetComponent<PlayerSlot>().Count = slots[i].count;
+                }
                 slotUIs[i].GetComponent<PlayerSlot>().represent = slots[i].typeOfItem;
                 slotUIsCopy[i].GetComponent<PlayerSlot>().represent = slots[i].typeOfItem;
+                slotUIs[i].GetComponent<PlayerSlot>().Count = slots[i].count;
+                slotUIsCopy[i].GetComponent<PlayerSlot>().Count = slots[i].count;
             }
             else
             {
@@ -151,8 +168,20 @@ public class InventoryOfPlayer : MonoBehaviour {
                 image.GetComponent<Image>().sprite = defaultSprite;
                 image.transform.localScale = Vector3.one * 0.25f;
                 label.GetComponent<Text>().text = slots[i].count.ToString();
+                if (OrdersMenuController.atOrderStation)
+                {
+                    image = slotUIsDelivery[i].transform.GetChild(0).gameObject;
+                    label = slotUIsDelivery[i].transform.GetChild(1).GetChild(0).gameObject;
+                    image.GetComponent<Image>().sprite = defaultSprite;
+                    image.transform.localScale = Vector3.one * 0.25f;
+                    label.GetComponent<Text>().text = slots[i].count.ToString();
+                    slotUIsDelivery[i].GetComponent<PlayerSlot>().represent = null;
+                    slotUIsDelivery[i].GetComponent<PlayerSlot>().Count = 0;
+                }
                 slotUIs[i].GetComponent<PlayerSlot>().represent = null;
                 slotUIsCopy[i].GetComponent<PlayerSlot>().represent = null;
+                slotUIs[i].GetComponent<PlayerSlot>().Count = 0;
+                slotUIsCopy[i].GetComponent<PlayerSlot>().Count = 0;
             }
         }
     }

@@ -6,6 +6,10 @@ TagManager:
   tags:
   - station
   - market
+  - meal
+  - delivery
+  - orderMenu
+  - potantielCustomerUI
   layers:
   - Default
   - TransparentFX

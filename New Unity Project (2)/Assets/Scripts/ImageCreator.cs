@@ -37,6 +37,7 @@ public class ImageCreator : MonoBehaviour {
                 else
                 {
                     control = false;
+                    break;
                 }
             }
         }
@@ -69,7 +70,6 @@ public class ImageCreator : MonoBehaviour {
 
     public static void Closure()
     {
-        Debug.Log("emrin olur abi");
         for (int i = 0; i < slots.Length; i++)
         {
             while(slots[i].count > 0)
@@ -152,7 +152,6 @@ public class ImageCreator : MonoBehaviour {
         {
             inputs = Output.GetComponent<Meal>().Inputs;
         }
-        Debug.Log(inputs.Length);
         for (int i = 0;i < inputs.Length; i++)
         {
             slots[i].typeOfItem = inputs[i];
