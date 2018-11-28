@@ -45,7 +45,6 @@ public class FadingNotification : MonoBehaviour {
         {
             case interfaceType.image:
                 color.a = Mathf.Lerp(0, startRate, lifeTime / lifeSeed);
-                Debug.Log(color.a);
                 GetComponent<Image>().color = color;
                 break;
             case interfaceType.text:

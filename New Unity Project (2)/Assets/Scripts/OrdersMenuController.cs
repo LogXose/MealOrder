@@ -9,13 +9,10 @@ public class OrdersMenuController : MonoBehaviour {
     public static bool atOrderStation = false;
     public GameObject orderCount;
     public GameObject inventory;
-	// Use this for initialization
-	void Start () {
-
-	}
 	
-	// Update is called once per frame
+
 	void Update () {
+
         if (open)
         {
             GetComponent<Animator>().SetBool("open", true);
