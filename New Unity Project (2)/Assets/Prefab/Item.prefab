@@ -136,7 +136,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 12800000, guid: ae89278574c374b498191649902cf9c8, type: 3}
+    m_Font: {fileID: 12800000, guid: 5d393d0edee36c4459790bfccb9edc6b, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -366,6 +366,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   represent: {fileID: 0}
+  price: 0
 --- !u!114 &114911728656138048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -504,7 +505,7 @@ RectTransform:
   m_GameObject: {fileID: 1508449749210686}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2500002, y: 1.2500002, z: 1}
+  m_LocalScale: {x: 1.0515249, y: 1.0515249, z: 0.8412197}
   m_Children:
   - {fileID: 224171350868635182}
   - {fileID: 224916968425148216}
@@ -514,7 +515,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 10, y: -20}
+  m_AnchoredPosition: {x: -137.37906, y: -29.459396}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224563021282447980

@@ -10,6 +10,7 @@ public class PlayerSlot : MonoBehaviour,IPointerClickHandler,IDragHandler,IEndDr
     public UnityEvent middleClick;
     public UnityEvent rightClick;
     public GameObject represent;
+    public static GameObject playerInventory;
     public int Count;
     public static Order.MealOrder mealOrder;
     Vector3 normalLocalPos;
@@ -31,8 +32,7 @@ public class PlayerSlot : MonoBehaviour,IPointerClickHandler,IDragHandler,IEndDr
     {
         if (OrdersMenuController.atOrderStation && represent != null)
         {
-            GraphicRaycaster gr = GameObject.FindGameObjectWithTag("orderMenu").
-                GetComponent<GraphicRaycaster>();
+            GraphicRaycaster gr = playerInventory.GetComponent<GraphicRaycaster>();
             PointerEventData ped = new PointerEventData(null);
             ped.position = Input.mousePosition;
             List<RaycastResult> results = new List<RaycastResult>();

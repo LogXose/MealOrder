@@ -133,7 +133,6 @@ public class Order : MonoBehaviour {
             cooldownSave = orderChanceCooldown();
             if (orderTrigger())
             {
-                Debug.Log("created");
                 int range = availableMeals.Length;
                 GameObject meal = availableMeals[Random.Range(0, range)];
                 CreateOrder(orderPrefab, transform, _meal: meal);

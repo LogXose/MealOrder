@@ -28,7 +28,12 @@ public class OrdersMenuController : MonoBehaviour {
             ped.position = Input.mousePosition;
             List<RaycastResult> results = new List<RaycastResult>();
             gr.Raycast(ped, results);
-            if(results.Count == 0)
+            GraphicRaycaster gr3 = inventory.GetComponent<GraphicRaycaster>();
+            PointerEventData ped3 = new PointerEventData(null);
+            ped3.position = Input.mousePosition;
+            List<RaycastResult> results3 = new List<RaycastResult>();
+            gr3.Raycast(ped3, results3);
+            if (results.Count == 0 && results3.Count == 0)
             {
                 open = false;
                 atOrderStation = false;
@@ -36,19 +41,15 @@ public class OrdersMenuController : MonoBehaviour {
         }
         if (atOrderStation)
         {
-            inventory.SetActive(true);
-            inventory.transform.SetAsLastSibling();
+            //inventory.SetActive(true);
+            //inventory.transform.SetAsLastSibling();
         }
         else
         {
-            inventory.SetActive(false);
+            //inventory.SetActive(false);
         }
-        int _orderCount = transform.childCount - 2;
+        int _orderCount = transform.childCount - 1;
         orderCount.GetComponent<Text>().text = _orderCount.ToString();
     }
 
-    public void Open()
-    {
-        open = true;
-    }
 }

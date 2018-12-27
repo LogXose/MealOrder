@@ -10,10 +10,13 @@ public class ShopController : MonoBehaviour {
         foreach (GameObject item in items)
         {
             GameObject perk = Instantiate(template,transform);
-            perk.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = item.GetComponent<RawMaterial>().Price.ToString();
+            perk.transform.GetChild(1).GetComponent<Text>().text = "BUY | "+
+                item.GetComponent<RawMaterial>().Price.ToString() + " €";
             perk.transform.GetChild(0).GetComponent<Image>().sprite = item.GetComponent<RawMaterial>().image;
-            perk.transform.GetChild(1).GetComponent<BuyingButton>().represent = item;
-            perk.transform.GetChild(1).GetComponent<BuyingButton>().price = item.GetComponent<RawMaterial>().Price;
+            perk.transform.GetChild(0).localScale /= 1.5f;
+            perk.transform.GetComponent<BuyingButton>().represent = item;
+            perk.transform.GetComponent<BuyingButton>().price = item.GetComponent<RawMaterial>().Price;
+            perk.transform.GetChild(2).GetComponent<Text>().text = item.name.ToUpper();
         }
 	}
 

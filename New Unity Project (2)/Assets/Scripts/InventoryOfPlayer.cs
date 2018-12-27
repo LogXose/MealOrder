@@ -52,8 +52,6 @@ public class InventoryOfPlayer : MonoBehaviour {
     public static InventorySlot[] slots = new InventorySlot[4] { slot1, slot2, slot3, slot4 };
 
     public GameObject[] slotUIs;
-    public GameObject[] slotUIsCopy;
-    public GameObject[] slotUIsDelivery;
     public Sprite defaultSprite;
 
     public static void Transaction(GameObject TypeOfItem)
@@ -136,25 +134,8 @@ public class InventoryOfPlayer : MonoBehaviour {
                 image.GetComponent<Image>().sprite = slots[i].GetSprite();
                 image.transform.localScale = Vector3.one * 0.4f;
                 label.GetComponent<Text>().text = slots[i].count.ToString();
-                image = slotUIsCopy[i].transform.GetChild(0).gameObject;
-                label = slotUIsCopy[i].transform.GetChild(1).GetChild(0).gameObject;
-                image.GetComponent<Image>().sprite = slots[i].GetSprite();
-                image.transform.localScale = Vector3.one * 0.4f;
-                label.GetComponent<Text>().text = slots[i].count.ToString();
-                if (OrdersMenuController.atOrderStation)
-                {
-                    image = slotUIsDelivery[i].transform.GetChild(0).gameObject;
-                    label = slotUIsDelivery[i].transform.GetChild(1).GetChild(0).gameObject;
-                    image.GetComponent<Image>().sprite = slots[i].GetSprite();
-                    image.transform.localScale = Vector3.one * 0.4f;
-                    label.GetComponent<Text>().text = slots[i].count.ToString();
-                    slotUIsDelivery[i].GetComponent<PlayerSlot>().represent = slots[i].typeOfItem;
-                    slotUIsDelivery[i].GetComponent<PlayerSlot>().Count = slots[i].count;
-                }
                 slotUIs[i].GetComponent<PlayerSlot>().represent = slots[i].typeOfItem;
-                slotUIsCopy[i].GetComponent<PlayerSlot>().represent = slots[i].typeOfItem;
                 slotUIs[i].GetComponent<PlayerSlot>().Count = slots[i].count;
-                slotUIsCopy[i].GetComponent<PlayerSlot>().Count = slots[i].count;
             }
             else
             {
@@ -163,25 +144,17 @@ public class InventoryOfPlayer : MonoBehaviour {
                 image.GetComponent<Image>().sprite = defaultSprite;
                 image.transform.localScale = Vector3.one * 0.25f;
                 label.GetComponent<Text>().text = "0";
-                image = slotUIsCopy[i].transform.GetChild(0).gameObject;
-                label = slotUIsCopy[i].transform.GetChild(1).GetChild(0).gameObject;
                 image.GetComponent<Image>().sprite = defaultSprite;
                 image.transform.localScale = Vector3.one * 0.25f;
                 label.GetComponent<Text>().text = slots[i].count.ToString();
                 if (OrdersMenuController.atOrderStation)
                 {
-                    image = slotUIsDelivery[i].transform.GetChild(0).gameObject;
-                    label = slotUIsDelivery[i].transform.GetChild(1).GetChild(0).gameObject;
                     image.GetComponent<Image>().sprite = defaultSprite;
                     image.transform.localScale = Vector3.one * 0.25f;
                     label.GetComponent<Text>().text = slots[i].count.ToString();
-                    slotUIsDelivery[i].GetComponent<PlayerSlot>().represent = null;
-                    slotUIsDelivery[i].GetComponent<PlayerSlot>().Count = 0;
                 }
                 slotUIs[i].GetComponent<PlayerSlot>().represent = null;
-                slotUIsCopy[i].GetComponent<PlayerSlot>().represent = null;
                 slotUIs[i].GetComponent<PlayerSlot>().Count = 0;
-                slotUIsCopy[i].GetComponent<PlayerSlot>().Count = 0;
             }
         }
     }

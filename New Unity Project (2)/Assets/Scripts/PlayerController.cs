@@ -14,18 +14,20 @@ public class PlayerController : MonoBehaviour
     bool faster = false;
     public float SPEED = 12.5f;
     public GameObject inventory;
-    GameObject dropDown;
+    public GameObject RecipeBook;
+    public GameObject charInventory;
     public static GameObject current;
     public bool inventoryOpen = false;
     public GameObject marketInventory;
     public bool marketInventoryOpen = false;
+    public GameObject Recipe;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = Body.GetComponent<Animator>();
-        dropDown = GameObject.Find("Dropdown");
         inventory.SetActive(false);
         marketInventory.SetActive(false);
+        PlayerSlot.playerInventory = charInventory;
     }
 
     void Update()
@@ -63,20 +65,26 @@ public class PlayerController : MonoBehaviour
                                 inventory.SetActive(true);
                                 inventory.transform.position = Input.mousePosition;
                                 current = hit.transform.gameObject;
-                                dropDown.GetComponent<Dropdown>().options.Clear();
-                                int iterator = 0;
+                                RecipeController.recipes = hit.transform.GetComponent<Station>().Outputs;
                                 foreach (GameObject item in hit.transform.GetComponent<Station>().Outputs)
                                 {
-                                    if(iterator == 0)
+                                    GameObject recipe = Instantiate(Recipe, RecipeBook.transform.GetChild(1).GetChild(0));
+                                    Image image = recipe.transform.GetChild(0).GetComponent<Image>();
+                                    Text text = recipe.transform.GetChild(1).GetComponent<Text>();
+                                    text.text = item.name.ToUpper();
+                                    if (item.GetComponent<Material>())
                                     {
-                                        dropDown.transform.GetChild(0).GetComponent<Text>().text = item.name;
-                                        iterator = 5;
+                                        image.sprite = item.GetComponent<Material>().image;
                                     }
-                                    dropDown.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData()
-                                    { text = item.name });
+                                    else if(item.GetComponent<Meal>())
+                                    {
+                                        image.sprite = item.GetComponent<Meal>().image;
+                                    }
                                 }
+                                GameObject.FindObjectOfType<RecipeController>().GetToggles();
                             }
-                        }else if (hit.transform.parent.CompareTag("station"))
+                        }
+                        else if (hit.transform.parent.CompareTag("station"))
                         {
                             if (Vector3.Magnitude(hit.point - transform.position) < 10)
                             {
@@ -84,20 +92,26 @@ public class PlayerController : MonoBehaviour
                                 inventory.SetActive(true);
                                 inventory.transform.position = Input.mousePosition;
                                 current = hit.transform.parent.gameObject;
-                                dropDown.GetComponent<Dropdown>().options.Clear();
-                                int iterator = 0;
+                                RecipeController.recipes = hit.transform.parent.GetComponent<Station>().Outputs;
                                 foreach (GameObject item in hit.transform.parent.GetComponent<Station>().Outputs)
                                 {
-                                    if (iterator == 0)
+                                    GameObject recipe = Instantiate(Recipe, RecipeBook.transform.GetChild(1).GetChild(0));
+                                    Image image = recipe.transform.GetChild(0).GetComponent<Image>();
+                                    Text text = recipe.transform.GetChild(1).GetComponent<Text>();
+                                    text.text = item.name.ToUpper();
+                                    if (item.GetComponent<Material>())
                                     {
-                                        dropDown.transform.GetChild(0).GetComponent<Text>().text = item.name;
-                                        iterator = 5;
+                                        image.sprite = item.GetComponent<Material>().image;
                                     }
-                                    dropDown.GetComponent<Dropdown>().options.Add(new Dropdown.OptionData()
-                                    { text = item.name });
+                                    else if (item.GetComponent<Meal>())
+                                    {
+                                        image.sprite = item.GetComponent<Meal>().image;
+                                    }
                                 }
+                                GameObject.FindObjectOfType<RecipeController>().GetToggles();
                             }
-                        }else if (hit.transform.CompareTag("market"))
+                        }
+                        else if (hit.transform.CompareTag("market"))
                         {
                             if (Vector3.Magnitude(hit.point - transform.position) < 30)
                             {
@@ -134,11 +148,13 @@ public class PlayerController : MonoBehaviour
                 ped2.position = Input.mousePosition;
                 List<RaycastResult> results2 = new List<RaycastResult>();
                 gr2.Raycast(ped2, results2);
-                /*GraphicRaycaster gr3 = inventory.GetComponent<GraphicRaycaster>();
+                GraphicRaycaster gr3 = charInventory.GetComponent<GraphicRaycaster>();
                 PointerEventData ped3 = new PointerEventData(null);
                 ped3.position = Input.mousePosition;
                 List<RaycastResult> results3 = new List<RaycastResult>();
-                gr3.Raycast(ped3, results3);*/
+                gr3.Raycast(ped3, results3);
+                Debug.Log("at player=" + results3.Count);
+
                 if (results.Count > 0)
                 {
                     foreach (var item in results)
@@ -151,16 +167,17 @@ public class PlayerController : MonoBehaviour
                 {
 
                 }
-                /*else if (results3.Count > 0)
+                else if (results3.Count > 0)
                 {
 
-                }*/
+                }
                 else
                 {
                     if (inventoryOpen)
                     {
                         ImageCreator.Closure();
                     }
+                    RecipeBook.transform.GetChild(1).GetChild(0).GetComponent<RecipeController>().clean();
                     inventoryOpen = false;
                     marketInventoryOpen = false;
                     inventory.SetActive(false);

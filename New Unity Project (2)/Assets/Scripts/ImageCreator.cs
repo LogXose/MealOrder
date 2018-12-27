@@ -130,6 +130,7 @@ public class ImageCreator : MonoBehaviour {
         GameObject[] outputs = current.GetComponent<Station>().Outputs;
         foreach(var item in outputs)
         {
+            Debug.Log("Ouyput Finder:" + item.name);
             if(item.name == name)
             {
                 willCreate = item;
@@ -142,7 +143,7 @@ public class ImageCreator : MonoBehaviour {
 
     public void DefiningOFSlotsGOs()
     {
-        GameObject Output = OutputFinder(label.GetComponent<Text>().text);
+        GameObject Output = RecipeController.GetRecipe();
         GameObject[] inputs= new GameObject[1];
         if (Output.GetComponent<Material>() != null)
         {
@@ -165,7 +166,7 @@ public class ImageCreator : MonoBehaviour {
 
     void UIArrangements()
     {
-        GameObject Output = OutputFinder(label.GetComponent<Text>().text);
+        GameObject Output = RecipeController.GetRecipe();
         if (Output.GetComponent<Material>() != null)
         {
             avatar.transform.GetChild(0).GetComponent<Image>().sprite = Output.GetComponent<Material>().image;
