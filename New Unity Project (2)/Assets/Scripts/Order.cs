@@ -24,7 +24,6 @@ public class Order : MonoBehaviour {
         public GameObject uiPrefab;
         public GameObject ui;
         public GameObject meal;
-        public Transform Transform;
         public Sprite sprite;
         public string name;
         public string adress;
@@ -38,6 +37,24 @@ public class Order : MonoBehaviour {
         public bool completed = false;
         private bool finisher = false;
         private bool cancelOrder = false;
+        
+        public bool isItAvaiable()
+        {
+            int calculate = 0;
+            foreach (var good in InventoryOfPlayer.slots)
+            {
+                if (good.typeOfItem == meal)
+                {
+                    calculate += good.count;
+                    break;
+                }
+            }
+            if(calculate >= Count)
+            {
+                return true;
+            }
+            return false;
+        }
         public void Update()
         {
             if(!paused && started) spendedTime += Time.deltaTime;
@@ -45,10 +62,10 @@ public class Order : MonoBehaviour {
             int sec = (int)remainingTime % 60;
             int min = (int)remainingTime / 60;
             string time = min.ToString("0") + ":" + sec.ToString("00");
-            ui.transform.GetChild(1).GetComponent<Text>().text = time;
+            ui.transform.GetChild(3).GetComponent<Text>().text = time;
             if (completed)
             {
-                ui.transform.GetChild(2).gameObject.SetActive(true);
+                ui.transform.GetChild(6).gameObject.SetActive(false);
                 paused = true;
                 Finisher(false);
             }
@@ -56,6 +73,19 @@ public class Order : MonoBehaviour {
             {
                 paused = true;
                 Finisher(true);
+            }
+            Color blue = ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color;
+            if (isItAvaiable())
+            {
+                blue.a = 1;
+                ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color = blue;
+                ui.transform.GetChild(6).GetComponent<BasicButton>().enabled = true;
+            }
+            else
+            {
+                blue.a = 0.2f;
+                ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color = blue;
+                ui.transform.GetChild(6).GetComponent<BasicButton>().enabled = false;
             }
         }
         public void Initialize()
@@ -65,11 +95,11 @@ public class Order : MonoBehaviour {
                 name = meal.name;
                 sprite = meal.GetComponent<Meal>().image;
             }
-            ui = Instantiate(uiPrefab, Transform);
+            ui = Instantiate(uiPrefab, GameObject.FindGameObjectWithTag("orderContent").transform);
             ui.GetComponent<OrderedMeal>().MealOrder = this; 
-            ui.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = sprite;
-            ui.transform.GetChild(0).GetChild(0).localScale = Vector3.one * 0.4f;
-            ui.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>().text = Count.ToString();
+            ui.transform.GetChild(2).GetComponent<Image>().sprite = sprite;
+            ui.transform.GetChild(0).GetComponent<Text>().text = name;
+            ui.transform.GetChild(4).GetComponent<Text>().text = Count.ToString();
         }
         private void Finisher(bool negative)
         {
@@ -79,16 +109,22 @@ public class Order : MonoBehaviour {
                 {
                     finisher = true;
                     DecreasePotCustomer();
+                    ui.GetComponent<Image>().color = Color.red;
                 }
                 else
                 {
                     finisher = true;
                     IncreasePotCustomer();
+                    for (int i = 0; i < Count; i++)
+                    {
+                        InventoryOfPlayer.BackTransaction(meal);
+                    }
+                    ui.GetComponent<Image>().color = Color.green;
                 }
             }
         }
     }
-    public static void CreateOrder(GameObject ui,Transform transform,int countative = 1,
+    public static void CreateOrder(GameObject ui,int countative = 1,
         GameObject _meal = null, float price = 0, string adress = "ananin amina", float time = 50)
     {
         MealOrder mealOrder = new MealOrder()
@@ -98,7 +134,6 @@ public class Order : MonoBehaviour {
             adress = adress,
             totalTime = time,
             uiPrefab = ui,
-            Transform = transform,
             Count = countative
         };
         orders.Add(mealOrder);
@@ -135,7 +170,7 @@ public class Order : MonoBehaviour {
             {
                 int range = availableMeals.Length;
                 GameObject meal = availableMeals[Random.Range(0, range)];
-                CreateOrder(orderPrefab, transform, _meal: meal);
+                CreateOrder(orderPrefab, _meal: meal);
             }
         }
         foreach (var item in orders)
@@ -147,7 +182,7 @@ public class Order : MonoBehaviour {
             int range = availableMeals.Length;
             int count = Random.Range(1, 6);
             GameObject meal = availableMeals[Random.Range(0, range)];
-            CreateOrder(orderPrefab, transform, time:Random.Range(20,60), _meal: meal,countative:count);
+            CreateOrder(orderPrefab, time:Random.Range(20,60), _meal: meal,countative:count);
         }
     }
     public static void IncreasePotCustomer()
@@ -165,10 +200,6 @@ public class Order : MonoBehaviour {
     private void Start()
     {
         orderAlarm = _orderAlarm;
-        increasePotantielCustomer = GameObject.FindGameObjectWithTag("potantielCustomerUI").transform.
-            GetChild(2).gameObject;
-        decreasePotantielCustomer = GameObject.FindGameObjectWithTag("potantielCustomerUI").transform.
-            GetChild(3).gameObject;
         orderInstance = this;
     }
 }

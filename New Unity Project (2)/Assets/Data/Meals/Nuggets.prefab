@@ -56,3 +56,6 @@ MonoBehaviour:
   - {fileID: 1241988787001454, guid: a6fd05a7e7503364294118b2a77b6aea, type: 2}
   Station: []
   image: {fileID: 21300000, guid: d6fe2876fc1c0f748a502c834e2e2094, type: 3}
+  Definition: Siktiriboktan tavuk parcalari
+  InputCount: 0100000001000000
+  unitTime: 3

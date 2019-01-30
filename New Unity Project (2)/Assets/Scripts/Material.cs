@@ -7,4 +7,7 @@ public class Material : MonoBehaviour {
     public GameObject[] Inputs;
     public GameObject[] Station;
     public Sprite image;
+    public string Definition;
+    public int[] InputCount;
+    public int unitTime;
 }

@@ -9,10 +9,10 @@ public class OrdersMenuController : MonoBehaviour {
     public static bool atOrderStation = false;
     public GameObject orderCount;
     public GameObject inventory;
+    [SerializeField] GameObject content;
 	
 
 	void Update () {
-
         if (open)
         {
             GetComponent<Animator>().SetBool("open", true);
@@ -38,6 +38,10 @@ public class OrdersMenuController : MonoBehaviour {
                 open = false;
                 atOrderStation = false;
             }
+            else
+            {
+                open = true;
+            }
         }
         if (atOrderStation)
         {
@@ -48,7 +52,7 @@ public class OrdersMenuController : MonoBehaviour {
         {
             //inventory.SetActive(false);
         }
-        int _orderCount = transform.childCount - 1;
+        int _orderCount = content.transform.childCount;
         orderCount.GetComponent<Text>().text = _orderCount.ToString();
     }
 

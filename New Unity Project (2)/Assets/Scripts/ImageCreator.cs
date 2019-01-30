@@ -16,43 +16,109 @@ public class ImageCreator : MonoBehaviour {
     public static InventorySlot slot4 = new InventorySlot() { typeOfItem = null, count = 0, index = 3 };
     public static InventorySlot slot5 = new InventorySlot() { typeOfItem = null, count = 0, index = 4 };
     public static InventorySlot slot6 = new InventorySlot() { typeOfItem = null, count = 0, index = 5 };
-    public static InventorySlot[] slots = new InventorySlot[6] { slot1, slot2, slot3, slot4, slot5, slot6 };
+    public static InventorySlot slot7 = new InventorySlot() { typeOfItem = null, count = 0, index = 6 };
+    public static InventorySlot slot8 = new InventorySlot() { typeOfItem = null, count = 0, index = 7 };
+    public static InventorySlot[] slots = new InventorySlot[8] { slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8 };
+    [SerializeField]
+    GameObject slotPrefab;
 
-    public void triggerCreate()
+    /*public void triggerCreate()
     {
         Create();
-    }
+    }*/
 
-    public static void Create()
+    public void Create()
     {
-        bool control = false;
-        for(int i = 0; i < slots.Length; i++)
+        GameObject Output = RecipeController.GetRecipe();
+        int[] takeFromInventory = new int[8];
+        int[] takeFromStation = new int[8];
+        for (int i = 0; i < 8; i++)
         {
-            if(slots[i].typeOfItem != null)
+            if (slots[i].typeOfItem != null)
             {
-                if(slots[i].count > 0)
+                if (slots[i].unitCount <= supplyCalculator(slots[i].typeOfItem,out takeFromInventory[i],out takeFromStation[i]))
                 {
-                    control = true;
+
                 }
                 else
                 {
-                    control = false;
-                    break;
+                    Debug.Log("eksik" + slots[i].typeOfItem);
+                    return;
                 }
             }
         }
-        if (control)
+
+        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
+        for (int i = 0; i < 8; i++)
         {
-            for (int i = 0; i < slots.Length; i++)
+            for (int j = 0; j < slots[i].unitCount*Count; j++)
             {
-                if (slots[i].typeOfItem != null)
+                if(takeFromStation[i] > 0)
                 {
-                    slots[i].count--;
+                    takeFromStation[i]--;
+                    Station.BackTransaction(slots[i].typeOfItem);
+                }
+                else
+                {
+                    takeFromInventory[i]--;
+                    InventoryOfPlayer.BackTransaction(slots[i].typeOfItem);
                 }
             }
-            Station.Transaction(willCreate);
         }
+        //Station.Transaction(Output);
+        PlayerController.current.GetComponent<Station>().Create(Output);
+        //GameObject[] outputAndCurrent = new GameObject[2] { Output, PlayerController.current };
+        //StartCoroutine("animateAndCreate", outputAndCurrent);
     }
+
+    /*public static void Create()
+    {
+        
+        foreach (var good in InventoryOfPlayer.slots)
+        {
+            if (good.typeOfItem == item)
+            {
+                calculate += good.count;
+                break;
+            }
+        }
+        foreach (var good in PlayerController.current.GetComponent<Station>().inventory)
+        {
+            if (good.typeOfItem == item)
+            {
+                calculate += good.count;
+                break;
+            }
+        }*/
+            
+        /* bool control = false;
+         for(int i = 0; i < slots.Length; i++)
+         {
+             if(slots[i].typeOfItem != null)
+             {
+                 if(slots[i].count > 0)
+                 {
+                     control = true;
+                 }
+                 else
+                 {
+                     control = false;
+                     break;
+                 }
+             }
+         }
+         if (control)
+         {
+             for (int i = 0; i < slots.Length; i++)
+             {
+                 if (slots[i].typeOfItem != null)
+                 {
+                     slots[i].count--;
+                 }
+             }
+             Station.Transaction(willCreate);
+         }
+    }*/
 
     public static void TakeIn(GameObject sended,out bool decrease)
     {
@@ -99,6 +165,7 @@ public class ImageCreator : MonoBehaviour {
         public GameObject typeOfItem;
         public int count;
         public int index;
+        public int unitCount;
         public Sprite GetSprite()
         {
             switch (GetMaterialType())
@@ -122,8 +189,35 @@ public class ImageCreator : MonoBehaviour {
     void Update () {
         DefiningOFSlotsGOs();
         UIArrangements();
+        CountChanger();
     }
 
+    void CountChanger()
+    {
+        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Count++;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && Count > 1)
+        {
+            Count--;
+        }
+        transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text = Count.ToString();
+    }
+    public void IncreaseCount()
+    {
+        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
+        Count++;
+        transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text = Count.ToString();
+    }
+    public void DecreaseCount()
+    {
+        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
+        if (Count == 1) return;
+        Count--;
+        transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text = Count.ToString();
+    }
     public GameObject OutputFinder(string name)
     {
         GameObject current = PlayerController.current;
@@ -145,18 +239,21 @@ public class ImageCreator : MonoBehaviour {
     {
         GameObject Output = RecipeController.GetRecipe();
         GameObject[] inputs= new GameObject[1];
+        int[] counts = new int[5];
         if (Output.GetComponent<Material>() != null)
         {
             inputs = Output.GetComponent<Material>().Inputs;
+            counts = Output.GetComponent<Material>().InputCount;
         }
         else if (Output.GetComponent<Meal>() != null)
         {
             inputs = Output.GetComponent<Meal>().Inputs;
+            counts = Output.GetComponent<Meal>().InputCount;
         }
         for (int i = 0;i < inputs.Length; i++)
         {
             slots[i].typeOfItem = inputs[i];
-            
+            slots[i].unitCount = counts[i];
         }
         for (int i = inputs.Length; i < slots.Length; i++)
         {
@@ -166,46 +263,109 @@ public class ImageCreator : MonoBehaviour {
 
     void UIArrangements()
     {
+        int Count = 0;
         GameObject Output = RecipeController.GetRecipe();
         if (Output.GetComponent<Material>() != null)
         {
-            avatar.transform.GetChild(0).GetComponent<Image>().sprite = Output.GetComponent<Material>().image;
-            avatar.transform.GetChild(0).localScale = Vector3.one * 0.6f;
+            avatar.GetComponent<Image>().sprite = Output.GetComponent<Material>().image;
+            avatar.GetComponent<Image>().color = Color.white;
+            label.GetComponent<Text>().text = Output.name;
+            GameObject definition = transform.parent.GetChild(3).gameObject;
+            definition.GetComponent<Text>().text = Output.GetComponent<Material>().Definition;
+            Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
+            GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+            int unitTimeTimesCount = Output.GetComponent<Material>().unitTime * Count;
+            int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
+            int second = unitTimeTimesCount % 60;
+            string _time = minute.ToString("00") + ":" + second.ToString("00");
+            Time.GetComponent<Text>().text = _time;
         }
         else if (Output.GetComponent<Meal>() != null)
         {
-            avatar.transform.GetChild(0).GetComponent<Image>().sprite = Output.GetComponent<Meal>().image;
-            avatar.transform.GetChild(0).localScale = Vector3.one * 0.6f;
+            avatar.GetComponent<Image>().sprite = Output.GetComponent<Meal>().image;
+            avatar.GetComponent<Image>().color = Color.white;
+            label.GetComponent<Text>().text = Output.name;
+            GameObject definition = transform.parent.GetChild(3).gameObject;
+            definition.GetComponent<Text>().text = Output.GetComponent<Meal>().Definition;
+            Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
+            GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+            int unitTimeTimesCount = Output.GetComponent<Meal>().unitTime * Count;
+            int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
+            int second = unitTimeTimesCount % 60;
+            string _time = minute.ToString("00") + ":" + second.ToString("00");
+            Time.GetComponent<Text>().text = _time;
         }
         else
         {
-            avatar.transform.GetChild(0).GetComponent<Image>().sprite = defaultSprite;
-            avatar.transform.GetChild(0).localScale = Vector3.one * 0.25f;
+            avatar.GetComponent<Image>().sprite = defaultSprite;
         }
-        for (int i = 0; i < 6; i++)
+
+        for (int i = 0; i < 8; i++)
         {
             if (slots[i].typeOfItem != null)
             {
-                GameObject image = slotUIs[i].transform.GetChild(0).gameObject;
-                GameObject label = slotUIs[i].transform.GetChild(1).GetChild(0).gameObject;
+                slotUIs[i].SetActive(true);
+                GameObject image = slotUIs[i].transform.GetChild(1).gameObject;
+                GameObject label = slotUIs[i].transform.GetChild(2).gameObject;
                 image.GetComponent<Image>().sprite = slots[i].GetSprite();
-                image.transform.localScale = Vector3.one * 0.4f;
-                label.GetComponent<Text>().text = slots[i].count.ToString();
-                image.GetComponent<Image>().sprite = slots[i].GetSprite();
-                image.transform.localScale = Vector3.one * 0.4f;
-                label.GetComponent<Text>().text = slots[i].count.ToString();
+                image.GetComponent<Image>().color = Color.white;
+                label.GetComponent<Text>().text = supplyCalculator(slots[i].typeOfItem) +"/"+slots[i].unitCount*Count;//buraya station deposundaki + inventorydeki malzeme miktarinin toplami yazilacaak
             }
             else
             {
-                GameObject image = slotUIs[i].transform.GetChild(0).gameObject;
-                GameObject label = slotUIs[i].transform.GetChild(1).GetChild(0).gameObject;
+                slotUIs[i].SetActive(false);
+                /*
+                GameObject image = slotUIs[i].transform.GetChild(1).gameObject;
+                GameObject label = slotUIs[i].transform.GetChild(2).gameObject;
                 image.GetComponent<Image>().sprite = defaultSprite;
-                image.transform.localScale = Vector3.one * 0.25f;
-                label.GetComponent<Text>().text = "0";
-                image.GetComponent<Image>().sprite = defaultSprite;
-                image.transform.localScale = Vector3.one * 0.25f;
-                label.GetComponent<Text>().text = slots[i].count.ToString();
+                label.GetComponent<Text>().text = "0";*/
             }
         }
+    }
+    int supplyCalculator(GameObject item)
+    {
+        int calculate = 0;
+        foreach (var good in InventoryOfPlayer.slots)
+        {
+            if(good.typeOfItem == item)
+            {
+                calculate += good.count;
+                break;
+            }
+        }
+        foreach(var good in PlayerController.current.GetComponent<Station>().inventory)
+        {
+            if (good.typeOfItem == item)
+            {
+                calculate += good.count;
+                break;
+            }
+        }
+        return calculate;
+    }
+    int supplyCalculator(GameObject item,out int fromInventory,out int fromStation )
+    {
+        int calculate = 0;
+        fromInventory = 0;
+        fromStation = 0;
+        foreach (var good in InventoryOfPlayer.slots)
+        {
+            if (good.typeOfItem == item)
+            {
+                calculate += good.count;
+                fromInventory = good.count;
+                break;
+            }
+        }
+        foreach (var good in PlayerController.current.GetComponent<Station>().inventory)
+        {
+            if (good.typeOfItem == item)
+            {
+                calculate += good.count;
+                fromStation = good.count;
+                break;
+            }
+        }
+        return calculate;
     }
 }

@@ -6,6 +6,6 @@ using UnityEngine.UI;
 public class PotantielCustomerUIController : MonoBehaviour {
     void Update()
     {
-        transform.GetChild(1).GetComponent<Text>().text = Order.PotantielCustomerCount.ToString();
+        transform.GetComponent<Text>().text = Order.PotantielCustomerCount.ToString();
     }
 }

@@ -23,7 +23,6 @@ public class BuyingButton : MonoBehaviour, IPointerClickHandler
                 if (execution)
                 {
                     InventoryOfPlayer.Money -= price;
-                    PricePanelController.DecreaseAnimation(price);
                 }
             }
         }

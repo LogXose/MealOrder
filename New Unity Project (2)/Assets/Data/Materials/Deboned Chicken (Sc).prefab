@@ -55,3 +55,6 @@ MonoBehaviour:
   - {fileID: 1050277271028066, guid: ab18576b92f32a249be8793a3a9e89d2, type: 2}
   Station: []
   image: {fileID: 21300000, guid: 77430203cb8ff5549b10fad895f97610, type: 3}
+  Definition: 
+  InputCount: 01000000
+  unitTime: 4

@@ -4,8 +4,10 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - represent: {instanceID: 0}
   - placeHolder: {fileID: 21300000, guid: 940d8b2dbf23a404a925f57d0185b6ed, type: 3}
+  - full: {fileID: 8300000, guid: 9f35106e76c6c40fa9c9e04a7cd7dca6, type: 3}
+  - empty: {fileID: 8300000, guid: 7bacdf65eeeb349fa91b5cfbc9f00567, type: 3}
+  - close: {fileID: 8300000, guid: caacc0490ff424545a46ee73449d0754, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
