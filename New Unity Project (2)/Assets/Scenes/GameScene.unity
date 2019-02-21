@@ -29028,6 +29028,7 @@ MonoBehaviour:
   - {fileID: 1241988787001454, guid: a6fd05a7e7503364294118b2a77b6aea, type: 2}
   - {fileID: 1513643575099154, guid: cc3a3d0771a6cb741a4804fa1788832e, type: 2}
   stokRight: 8
+  stationType: 0
 --- !u!95 &1875661981
 Animator:
   serializedVersion: 3
@@ -30461,6 +30462,7 @@ MonoBehaviour:
   Outputs:
   - {fileID: 1054736036432534, guid: 9126ca4935e1b374781ed79ef9e24f27, type: 2}
   stokRight: 8
+  stationType: 0
 --- !u!95 &1987564088
 Animator:
   serializedVersion: 3

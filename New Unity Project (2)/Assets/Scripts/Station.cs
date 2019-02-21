@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Station : MonoBehaviour {
-
     public class InventorySlot
     {
         public enum MaterialType
@@ -63,13 +62,11 @@ public class Station : MonoBehaviour {
     public int stokRight = 8;
     public enum StationType
     {
-        Furnace,
-        Bench,
-        Grille,
-        DeepFryer,
+        DoughCutter,
         DoughKneader,
-        Oven
+        Boiler
     }
+    public StationType stationType;
 
     private void Awake()
     {
