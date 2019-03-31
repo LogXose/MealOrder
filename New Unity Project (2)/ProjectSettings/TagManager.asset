@@ -12,6 +12,12 @@ TagManager:
   - potantielCustomerUI
   - blok
   - orderContent
+  - buyingPanel
+  - PastaFeature
+  - pickerPanel
+  - kind
+  - shape
+  - flour
   layers:
   - Default
   - TransparentFX

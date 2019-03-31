@@ -19,7 +19,7 @@ public class InventoryOfPlayer : MonoBehaviour {
         public MaterialType GetMaterialType()
         {
             if (typeOfItem.GetComponent<Meal>() != null) return MaterialType.meal;
-            else if (typeOfItem.GetComponent<Material>() != null) return MaterialType.material;
+            else if (typeOfItem.GetComponent<MealMaterial>() != null) return MaterialType.material;
             else if (typeOfItem.GetComponent<RawMaterial>() != null) return MaterialType.rawMaterial;
             else return MaterialType.nullable;
         }
@@ -34,7 +34,7 @@ public class InventoryOfPlayer : MonoBehaviour {
                     return typeOfItem.GetComponent<Meal>().image;
                     break;
                 case MaterialType.material:
-                    return typeOfItem.GetComponent<Material>().image;
+                    return typeOfItem.GetComponent<MealMaterial>().image;
                     break;
                 case MaterialType.rawMaterial:
                     return typeOfItem.GetComponent<RawMaterial>().image;

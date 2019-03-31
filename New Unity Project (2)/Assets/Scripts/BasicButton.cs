@@ -8,70 +8,78 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 
-    /// <summary>
-    /// Basic button class used throughout the demo.
-    /// </summary>
-    public class BasicButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+/// <summary>
+/// Basic button class used throughout the demo.
+/// </summary>
+public class BasicButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+{
+    public float fadeTime = 0.2f;
+    public float onHoverAlpha;
+    public float onClickAlpha;
+    public bool close = false;
+    [SerializeField] bool pickerItem = false;
+
+    [Serializable] 
+    public class ButtonClickedEvent : UnityEvent { }
+
+    [SerializeField]
+    private ButtonClickedEvent onClicked = new ButtonClickedEvent();
+
+    private CanvasGroup canvasGroup;
+
+    private void Awake()
     {
-        public float fadeTime = 0.2f;
-        public float onHoverAlpha;
-        public float onClickAlpha;
-        public bool close = false;
-
-        [Serializable]
-        public class ButtonClickedEvent : UnityEvent { }
-
-        [SerializeField]
-        private ButtonClickedEvent onClicked = new ButtonClickedEvent();
-
-        private CanvasGroup canvasGroup;
-
-        private void Awake()
-        {
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
-
-        public virtual void OnPointerEnter(PointerEventData eventData)
-        {
-            if (eventData.button != PointerEventData.InputButton.Left || close)
-            {
-                return;
-            }
-			StopAllCoroutines();
-            StartCoroutine(Utils.FadeOut(canvasGroup, onHoverAlpha, fadeTime));
-        }
-
-        public virtual void OnPointerExit(PointerEventData eventData)
-        {
-            if (eventData.button != PointerEventData.InputButton.Left || close)
-            {
-                return;
-            }
-
-			StopAllCoroutines();
-            StartCoroutine(Utils.FadeIn(canvasGroup, 1.0f, fadeTime));
-        }
-
-        public virtual void OnPointerDown(PointerEventData eventData)
-        {
-            if (eventData.button != PointerEventData.InputButton.Left || close)
-            {
-                return;
-            }
-				
-			canvasGroup.alpha = onClickAlpha;
-
-            onClicked.Invoke();
-        }
-
-        public virtual void OnPointerUp(PointerEventData eventData)
-        {
-            if (eventData.button != PointerEventData.InputButton.Left || close)
-            {
-                return;
-            }
-				
-			canvasGroup.alpha = onHoverAlpha;
-        }
+        canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
+
+    public virtual void OnPointerEnter(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left || close)
+        {
+            return;
+        }
+        StopAllCoroutines();
+        StartCoroutine(Utils.FadeOut(canvasGroup, onHoverAlpha, fadeTime));
+    }
+
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left || close)
+        {
+            return;
+        }
+
+        StopAllCoroutines();
+        StartCoroutine(Utils.FadeIn(canvasGroup, 1.0f, fadeTime));
+    }
+
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left || close)
+        {
+            return;
+        }
+
+        canvasGroup.alpha = onClickAlpha;
+
+        onClicked.Invoke();
+
+        if (pickerItem)
+        {
+            GameObject pickerPanel = GameObject.FindGameObjectWithTag("pickerPanel");
+            pickerPanel.SendMessage("pickedOne", transform.GetChild(2).gameObject);
+        }
+
+    }
+
+    public virtual void OnPointerUp(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left || close)
+        {
+            return;
+        }
+
+        canvasGroup.alpha = onHoverAlpha;
+    }
+}
 

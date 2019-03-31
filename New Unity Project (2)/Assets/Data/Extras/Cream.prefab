@@ -51,6 +51,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0175eec7dc2d24fa35d80d3bb05295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icon: {fileID: 0}
+  nameGO: Cream
   oldiesBoost: -5
   studentBoost: 5
   whiteCBoost: 5

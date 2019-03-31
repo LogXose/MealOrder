@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit hit;
                     faster = false;
-                    if (Physics.Raycast(ray, out hit))
+                    if (Physics.Raycast(ray, out hit) && !BuyingPanelController.atBuyingPanel)
                     {
                         if (hit.transform.CompareTag("station"))
                         {
@@ -72,9 +72,9 @@ public class PlayerController : MonoBehaviour
                                     Image image = recipe.transform.GetChild(2).GetComponent<Image>();
                                     Text text = recipe.transform.GetChild(0).GetComponent<Text>();
                                     text.text = item.name.ToUpper();
-                                    if (item.GetComponent<Material>())
+                                    if (item.GetComponent<MealMaterial>())
                                     {
-                                        image.sprite = item.GetComponent<Material>().image;
+                                        image.sprite = item.GetComponent<MealMaterial>().image;
                                     }
                                     else if(item.GetComponent<Meal>())
                                     {
@@ -99,9 +99,9 @@ public class PlayerController : MonoBehaviour
                                     Image image = recipe.transform.GetChild(2).GetComponent<Image>();
                                     Text text = recipe.transform.GetChild(0).GetComponent<Text>();
                                     text.text = item.name;
-                                    if (item.GetComponent<Material>())
+                                    if (item.GetComponent<MealMaterial>())
                                     {
-                                        image.sprite = item.GetComponent<Material>().image;
+                                        image.sprite = item.GetComponent<MealMaterial>().image;
                                     }
                                     else if (item.GetComponent<Meal>())
                                     {

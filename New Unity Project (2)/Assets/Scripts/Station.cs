@@ -18,7 +18,7 @@ public class Station : MonoBehaviour {
             if(typeOfItem != null)
             {
                 if (typeOfItem.GetComponent<Meal>() != null) return MaterialType.meal;
-                else if (typeOfItem.GetComponent<Material>() != null) return MaterialType.material;
+                else if (typeOfItem.GetComponent<MealMaterial>() != null) return MaterialType.material;
                 else if (typeOfItem.GetComponent<RawMaterial>() != null) return MaterialType.rawMaterial;
             }
             return MaterialType.nullable;
@@ -34,7 +34,7 @@ public class Station : MonoBehaviour {
                 case MaterialType.meal:
                     return typeOfItem.GetComponent<Meal>().image;
                 case MaterialType.material:
-                    return typeOfItem.GetComponent<Material>().image;
+                    return typeOfItem.GetComponent<MealMaterial>().image;
                 case MaterialType.rawMaterial:
                     return typeOfItem.GetComponent<RawMaterial>().image;
                 default:
@@ -67,6 +67,7 @@ public class Station : MonoBehaviour {
         Boiler
     }
     public StationType stationType;
+    public Sprite icon;
 
     private void Awake()
     {
@@ -135,9 +136,9 @@ public class Station : MonoBehaviour {
     {
         int Count = int.Parse(CountGO.transform.GetChild(0).GetComponent<Text>().text);
         int unitTimeTimesCount = 0;
-        if (Output.GetComponent<Material>())
+        if (Output.GetComponent<MealMaterial>())
         {
-            unitTimeTimesCount = Output.GetComponent<Material>().unitTime * Count;
+            unitTimeTimesCount = Output.GetComponent<MealMaterial>().unitTime * Count;
         }
         else
         {

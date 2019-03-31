@@ -158,7 +158,7 @@ public class ImageCreator : MonoBehaviour {
         public MaterialType GetMaterialType()
         {
             if (typeOfItem.GetComponent<Meal>() != null) return MaterialType.meal;
-            else if (typeOfItem.GetComponent<Material>() != null) return MaterialType.material;
+            else if (typeOfItem.GetComponent<MealMaterial>() != null) return MaterialType.material;
             else if (typeOfItem.GetComponent<RawMaterial>() != null) return MaterialType.rawMaterial;
             else return MaterialType.nullable;
         }
@@ -174,7 +174,7 @@ public class ImageCreator : MonoBehaviour {
                     return typeOfItem.GetComponent<Meal>().image;
                     break;
                 case MaterialType.material:
-                    return typeOfItem.GetComponent<Material>().image;
+                    return typeOfItem.GetComponent<MealMaterial>().image;
                     break;
                 case MaterialType.rawMaterial:
                     return typeOfItem.GetComponent<RawMaterial>().image;
@@ -240,10 +240,10 @@ public class ImageCreator : MonoBehaviour {
         GameObject Output = RecipeController.GetRecipe();
         GameObject[] inputs= new GameObject[1];
         int[] counts = new int[5];
-        if (Output.GetComponent<Material>() != null)
+        if (Output.GetComponent<MealMaterial>() != null)
         {
-            inputs = Output.GetComponent<Material>().Inputs;
-            counts = Output.GetComponent<Material>().InputCount;
+            inputs = Output.GetComponent<MealMaterial>().Inputs;
+            counts = Output.GetComponent<MealMaterial>().InputCount;
         }
         else if (Output.GetComponent<Meal>() != null)
         {
@@ -265,16 +265,16 @@ public class ImageCreator : MonoBehaviour {
     {
         int Count = 0;
         GameObject Output = RecipeController.GetRecipe();
-        if (Output.GetComponent<Material>() != null)
+        if (Output.GetComponent<MealMaterial>() != null)
         {
-            avatar.GetComponent<Image>().sprite = Output.GetComponent<Material>().image;
+            avatar.GetComponent<Image>().sprite = Output.GetComponent<MealMaterial>().image;
             avatar.GetComponent<Image>().color = Color.white;
             label.GetComponent<Text>().text = Output.name;
             GameObject definition = transform.parent.GetChild(3).gameObject;
-            definition.GetComponent<Text>().text = Output.GetComponent<Material>().Definition;
+            definition.GetComponent<Text>().text = Output.GetComponent<MealMaterial>().Definition;
             Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
             GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
-            int unitTimeTimesCount = Output.GetComponent<Material>().unitTime * Count;
+            int unitTimeTimesCount = Output.GetComponent<MealMaterial>().unitTime * Count;
             int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
             int second = unitTimeTimesCount % 60;
             string _time = minute.ToString("00") + ":" + second.ToString("00");

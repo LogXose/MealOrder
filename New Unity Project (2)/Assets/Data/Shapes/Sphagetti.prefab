@@ -53,4 +53,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   affectedKinds:
   - {fileID: 1269543277854060, guid: 79a7287736980014ba0786abc732a424, type: 2}
-  effectRate: 03000000
+  effectRate: 14000000
+  nameGO: Sphagetti
+  icon: {fileID: 0}

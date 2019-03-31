@@ -5,11 +5,13 @@ using UnityEngine;
 public class Kind : MonoBehaviour
 {
 
-    [SerializeField] int[] families;
-    [SerializeField] int[] oldies;
-    [SerializeField] int[] richies;
-    [SerializeField] int[] students;
-    [SerializeField] int[] whiteCollars;
+    public int[] families;
+    public int[] oldies;
+    public int[] richies;
+    public int[] students;
+    public int[] whiteCollars;
+    public Sprite icon;
+    public string nameGO;
     public Dictionary<Segmentation.CustomerSegmentation, int[]> dict = new Dictionary<Segmentation.CustomerSegmentation, int[]>();
 
     private void Awake()

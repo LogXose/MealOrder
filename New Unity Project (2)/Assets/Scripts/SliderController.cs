@@ -14,39 +14,60 @@ public class SliderController : MonoBehaviour {
     float right;
     float mid;
     float left;
+    [SerializeField] bool total1 = false;
+    [SerializeField] GameObject nextPage;
 
 	void Start () {
-        sliderLeft.value = 1;
-        sliderMid.value = 0;
-        sliderRight.value = 0;
+        if (total1)
+        {
+            sliderLeft.value = 1;
+            sliderMid.value = 0;
+            sliderRight.value = 0;
+        }
+        else
+        {
+            sliderLeft.value = 1;
+            sliderMid.value = 1;
+            sliderRight.value = 1;
+        }
         left = sliderLeft.value;
         mid =sliderMid.value;
         right = sliderRight.value;
 	}
 	
 	void Update () {
-        float surplus = 0;
-        if (left != sliderLeft.value)
+        if (total1)
         {
-            surplus += sliderLeft.value - left;
-            ExecuteChange(surplus, sliderMid, sliderRight,sliderLeft);
+            float surplus = 0;
+            if (left != sliderLeft.value)
+            {
+                surplus += sliderLeft.value - left;
+                ExecuteChange(surplus, sliderMid, sliderRight, sliderLeft);
+            }
+            else if (right != sliderRight.value)
+            {
+                surplus += sliderRight.value - right;
+                ExecuteChange(surplus, sliderMid, sliderLeft, sliderRight);
+            }
+            else if (mid != sliderMid.value)
+            {
+                surplus += sliderMid.value - mid;
+                ExecuteChange(surplus, sliderLeft, sliderRight, sliderMid);
+            }
+            left = sliderLeft.value;
+            mid = sliderMid.value;
+            right = sliderRight.value;
+            textMid.text = "%" + (mid * 100).ToString("00.0");
+            textLeft.text = "%" + (left * 100).ToString("00.0");
+            textRight.text = "%" + (right * 100).ToString("00.0");
         }
-        else if (right != sliderRight.value)
+        else
         {
-            surplus += sliderRight.value - right;
-            ExecuteChange(surplus, sliderMid, sliderLeft,sliderRight);
+            textMid.text = "%" + (sliderMid.value * 100).ToString("00.0");
+            textLeft.text = "%" + (sliderLeft.value * 100).ToString("00.0");
+            textRight.text = "%" + (sliderRight.value * 100).ToString("00.0");
         }
-        else if (mid != sliderMid.value)
-        {
-            surplus += sliderMid.value - mid;
-            ExecuteChange(surplus, sliderLeft, sliderRight,sliderMid);
-        }
-        left = sliderLeft.value;
-        mid = sliderMid.value;
-        right = sliderRight.value;
-        textMid.text = "%" + (mid * 100).ToString("00.0");
-        textLeft.text = "%" + (left * 100).ToString("00.0");
-        textRight.text = "%" + (right * 100).ToString("00.0");
+        
     }
     void ExecuteChange(float sur,Slider one,Slider two,Slider main)
     {
@@ -89,6 +110,14 @@ public class SliderController : MonoBehaviour {
             }
         }
  
+    }
+    public void SaveSegments()
+    {
+        PastaFeatures.quantative = sliderLeft.value*100;
+        PastaFeatures.effort = sliderMid.value*100;
+        PastaFeatures.quality = sliderRight.value*100;
+        nextPage.SetActive(true);
+        transform.parent.gameObject.SetActive(false);
     }
     
 }
