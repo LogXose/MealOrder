@@ -7,6 +7,7 @@ public class Extra : MonoBehaviour {
     public Sprite icon;
     public string nameGO;
     public int price;
+    public GameObject inputIntregident;
 
     public float oldiesBoost = 0;
     public float studentBoost = 0;

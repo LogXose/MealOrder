@@ -55,4 +55,4 @@ MonoBehaviour:
   - {fileID: 1269543277854060, guid: 79a7287736980014ba0786abc732a424, type: 2}
   effectRate: 03000000
   nameGO: Noddle
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8c8323ecf826a974bb8508707febc94c, type: 3}

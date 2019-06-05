@@ -13,7 +13,8 @@ public class Kind : MonoBehaviour
     public Sprite icon;
     public string nameGO;
     public Dictionary<Segmentation.CustomerSegmentation, int[]> dict = new Dictionary<Segmentation.CustomerSegmentation, int[]>();
-
+    public GameObject[] Inputs;
+    public int[] inputCountBase;
     private void Awake()
     {
         dict.Add(Segmentation.CustomerSegmentation.families, families);

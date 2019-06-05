@@ -8,6 +8,9 @@ public class Criticker : MonoBehaviour {
     public int deviationRange;
     public int price;
     public Sprite[] icon = new Sprite[5];
-    [SerializeField] Color[] colors = new Color[10];
+    public Color[] colors = new Color[10];
+    public Segmentation.CustomerSegmentation[] critickerSegmentation;
+    public string[] critickerNames;
+    public string[] critickerTitle;
 
 }

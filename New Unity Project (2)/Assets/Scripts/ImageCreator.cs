@@ -250,6 +250,7 @@ public class ImageCreator : MonoBehaviour {
             inputs = Output.GetComponent<Meal>().Inputs;
             counts = Output.GetComponent<Meal>().InputCount;
         }
+        Debug.Log(inputs[0]);
         for (int i = 0;i < inputs.Length; i++)
         {
             slots[i].typeOfItem = inputs[i];

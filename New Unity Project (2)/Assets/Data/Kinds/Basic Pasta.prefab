@@ -58,3 +58,5 @@ MonoBehaviour:
   whiteCollars: 1e0000000a0000001e0000001e000000190000000f000000320000000a00000023000000230000001e000000
   icon: {fileID: 0}
   nameGO: Basic Pasta
+  Inputs: []
+  inputCountBase: 

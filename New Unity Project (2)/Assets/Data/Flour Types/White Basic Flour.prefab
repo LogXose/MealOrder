@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4752488637665896}
   - component: {fileID: 114313951534797610}
+  - component: {fileID: 114082338158019060}
   m_Layer: 0
   m_Name: White Basic Flour
   m_TagString: Untagged
@@ -40,6 +41,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114082338158019060
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1866314275665776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f924cec41212eeb4f9c577c54d754816, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Inputs: []
+  Station: []
+  image: {fileID: 0}
+  Definition: 
+  InputCount: 
+  unitTime: 0
 --- !u!114 &114313951534797610
 MonoBehaviour:
   m_ObjectHideFlags: 1

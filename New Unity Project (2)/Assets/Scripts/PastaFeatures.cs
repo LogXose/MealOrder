@@ -5,12 +5,8 @@ using UnityEngine.UI;
 
 public class PastaFeatures : MonoBehaviour
 {
+    [SerializeField] GameObject[] _critickerList;
     [SerializeField] GameObject cContent;
-
-    public static List<GameObject> Kinds;
-    public static List<GameObject> Shapes;
-    public static List<GameObject> FlourTypes;
-    public static List<GameObject> Extras;
 
     public GameObject critiker;
 
@@ -25,10 +21,16 @@ public class PastaFeatures : MonoBehaviour
     public GameObject[] _shapes;
     public GameObject[] _flours;
     public GameObject[] _extras;
+    public GameObject[] _outputs;
+    public GameObject[] _rawInputs;
+    public GameObject[] _matInputs;
     [SerializeField] Text mealName;
+    string mealNameSave;
+    string mealDefSave;
     [SerializeField] Text mealDefinition;
     [SerializeField] GameObject page2;
     [SerializeField] GameObject page1;
+    [SerializeField] GameObject page7;
 
     public int SegmentSpecsFactor = 5;
     [SerializeField] float ReelLezzetPuaniFamily = 0;
@@ -75,6 +77,7 @@ public class PastaFeatures : MonoBehaviour
 
     public static Dictionary<Station.StationType, int> StationTimeReducer = new Dictionary<Station.StationType, int>()
     { {Station.StationType.Boiler ,0},{Station.StationType.DoughCutter ,0},{Station.StationType.DoughKneader ,0} };
+
     
     public void DefinitionPageCheck()
     {
@@ -99,6 +102,8 @@ public class PastaFeatures : MonoBehaviour
         }
         else
         {
+            mealDefSave = mealDefinition.text;
+            mealNameSave = mealName.text;
             page1.SetActive(false);
             page2.SetActive(true);
         }
@@ -125,7 +130,8 @@ public class PastaFeatures : MonoBehaviour
 
     public void PickCritiker(int i)
     {
-        critiker = _critickers[i];
+        critiker = Instantiate(_critickers[i]);
+        
         Debug.Log(critiker);
     }
 
@@ -188,7 +194,7 @@ public class PastaFeatures : MonoBehaviour
             if (alfaSegment > 100) { alfaSegment = 100; }
             else if (alfaSegment < 0) { alfaSegment = 0; }
 
-            float shapeFactor = 0;
+            float shapeFactor = 1;
             for (int i = 0; i < shape.GetComponent<Shape>().affectedKinds.Length; i++)
             {
                 if (shape.GetComponent<Shape>().affectedKinds[i] == kind)
@@ -200,7 +206,45 @@ public class PastaFeatures : MonoBehaviour
             float boostFactor = boostListForSegments[counter] / 100.0f + 1;
             listOfReels[counter] = (alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
             counter++;
-        }   
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            Text name = _critickerList[i].transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
+            name.text = critiker.GetComponent<Criticker>().critickerNames[i] + "(" + critiker.GetComponent<Criticker>().critickerTitle[i] + ") - "
+                + critiker.GetComponent<Criticker>().critickerSegmentation[i].ToString();
+            Text review = _critickerList[i].transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
+            float point = 0;
+            float errorChance = critiker.GetComponent<Criticker>().deviationRange;
+            switch (critiker.GetComponent<Criticker>().critickerSegmentation[i])
+            {
+                case Segmentation.CustomerSegmentation.oldies:
+                    point = listOfReels[1] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.students:
+                    point = listOfReels[3] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.whiteCollars:
+                    point = listOfReels[4] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.families:
+                    point = listOfReels[0] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.richies:
+                    point = listOfReels[2] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+            }
+
+            if (point > 10) point = 10;
+            else if (point < 0) point = 0;
+            Image pointColor = _critickerList[i].transform.GetChild(2).GetComponent<Image>();
+            Debug.Log(point);
+            pointColor.color = critiker.GetComponent<Criticker>().colors[Mathf.FloorToInt(point)-1];
+            Text pointText = _critickerList[i].transform.GetChild(2).GetChild(0).GetComponent<Text>();
+            if(point >= 10) pointText.text = point.ToString("00.0");
+            else pointText.text = point.ToString("0.0");
+            Image avatar = _critickerList[i].transform.GetChild(1).GetChild(1).GetComponent<Image>();
+            avatar.sprite = critiker.GetComponent<Criticker>().icon[i];
+        }
     }
 
     /*public static List<GameObject> KindsClosed;
@@ -231,4 +275,117 @@ public class PastaFeatures : MonoBehaviour
         ExtrasClosed = ExtrasClosedLoc;
     }*/
 
+    public void ProfilePage()
+    {
+        page7.SetActive(true);
+
+        page7.transform.GetChild(4).GetComponent<Text>().text = mealNameSave;
+        page7.transform.GetChild(5).GetComponent<Text>().text = mealDefSave;
+
+        GameObject[] inputs = setInputs().ToArray();
+        int estimatedCost = CostEstimater(inputs);
+        page7.transform.GetChild(8).GetComponent<Text>().text = estimatedCost.ToString()+"$";
+        int counter = 0;
+        Transform parent_ = page7.transform.GetChild(9).GetChild(1);
+        foreach (GameObject item in inputs)
+        {
+            GameObject slot = parent_.GetChild(counter).gameObject;
+            slot.SetActive(true);
+            Transform avatar = slot.transform.GetChild(0);
+            if (item.GetComponent<MealMaterial>())
+            {
+                MealMaterial mealMaterial = item.GetComponent<MealMaterial>();
+                avatar.GetChild(1).GetComponent<Image>().sprite = mealMaterial.image;
+                avatar.GetChild(1).GetComponent<Image>().color = Color.white;
+                //avatar.GetChild(2).GetComponent<Text>().text = (kind.GetComponent<Kind>().inputCountBase[counter]*(1+quantative)*100).ToString();
+                avatar.GetChild(3).GetComponent<Text>().text = mealMaterial.name;
+            }
+            else if(item.GetComponent<RawMaterial>())
+            {
+                RawMaterial mealMaterial = item.GetComponent<RawMaterial>();
+                avatar.GetChild(1).GetComponent<Image>().sprite = mealMaterial.image;
+                avatar.GetChild(1).GetComponent<Image>().color = Color.white;
+                //avatar.GetChild(2).GetComponent<Text>().text = (kind.GetComponent<Kind>().inputCountBase[counter] * quantative * 100).ToString();
+                avatar.GetChild(3).GetComponent<Text>().text = mealMaterial.name;
+            }
+            counter++;
+        }
+        for (int i = counter; i < 6; i++)
+        {
+            GameObject slot = parent_.GetChild(i).gameObject;
+            slot.SetActive(false);
+        }
+    }
+
+    int CostEstimater(GameObject[] inputs)
+    {
+
+        int estimatedCost = 0;
+        foreach (GameObject item in inputs)
+        {
+            if (item.GetComponent<RawMaterial>())
+            {
+                estimatedCost += item.GetComponent<RawMaterial>().Price;
+            }
+            else
+            {
+                GameObject[] inputsOfMaterial = item.GetComponent<MealMaterial>().Inputs;
+                foreach (GameObject GO in inputsOfMaterial)
+                {
+                    if (GO.GetComponent<RawMaterial>())
+                    {
+                        estimatedCost += GO.GetComponent<RawMaterial>().Price;
+                    }
+                    else
+                    {
+                        GameObject[] inputsOfMaterialOFMaterial = GO.GetComponent<MealMaterial>().Inputs;
+                        foreach (GameObject GOO in inputsOfMaterialOFMaterial)
+                        {
+                            estimatedCost += GOO.GetComponent<RawMaterial>().Price;
+                        }
+                    }
+                }
+            }
+        }
+        return estimatedCost;
+    }
+
+    List<GameObject> setInputs()
+    {
+        List<GameObject> locInputs = new List<GameObject>();
+        int shapeInt = 0;
+        int flourInt = 0;
+
+        for (int i = 0; i < _shapes.Length; i++)
+        {
+            if(_shapes[i] == shape)
+            {
+                shapeInt = i;
+            }
+        }
+
+        for (int i = 0; i < _flours.Length; i++)
+        {
+            if (_flours[i] == flour)
+            {
+                flourInt = i;
+            }
+        }
+
+        string mealCode = shapeInt.ToString() + flourInt.ToString();
+        if(mealCode == "00")
+        {
+            locInputs.Add(_rawInputs[0]);
+            locInputs.Add(_matInputs[1]);
+        }
+        foreach (GameObject item in pickedExtras)
+        {
+            locInputs.Add(item.GetComponent<Extra>().inputIntregident);
+        }
+        foreach (GameObject item in kind.GetComponent<Kind>().Inputs)
+        {
+            locInputs.Add(item);
+        }
+        return locInputs;
+    }
 }
