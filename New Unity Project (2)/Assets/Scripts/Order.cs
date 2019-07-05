@@ -117,7 +117,7 @@ public class Order : MonoBehaviour {
                     IncreasePotCustomer();
                     for (int i = 0; i < Count; i++)
                     {
-                        InventoryOfPlayer.BackTransaction(meal);
+                        InventoryOfPlayer.BackTransaction(meal,11);
                     }
                     ui.GetComponent<Image>().color = Color.green;
                 }

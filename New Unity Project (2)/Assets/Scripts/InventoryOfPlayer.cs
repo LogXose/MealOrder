@@ -4,8 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryOfPlayer : MonoBehaviour {
-    public static int Money = 500;
+    public static float Money = 500;
     [SerializeField] Color blue;
+
+    public static int tkg = 3000;
+    public static int tkgCur = 0;
 
     public class InventorySlot
     {
@@ -44,6 +47,7 @@ public class InventoryOfPlayer : MonoBehaviour {
                     break;
             }
         }
+        public GameObject slotui;
     }
 
     public static int inventorySlotRight = 4;
@@ -62,44 +66,56 @@ public class InventoryOfPlayer : MonoBehaviour {
     public GameObject[] slotUIs;
     public Sprite defaultSprite;
 
-    public static void Transaction(GameObject TypeOfItem)
+    public static void Transaction(GameObject TypeOfItem, int quantaty)
     {
         foreach (var item in slots)
         {
-            if(item.typeOfItem == TypeOfItem)
+            if (item.typeOfItem == TypeOfItem && tkgCur + quantaty < tkg)
             {
-                item.count  += 1;
+                item.count += quantaty;
+                tkgCur += quantaty;
+                Debug.Log(item.count);
                 return;
             }
+            else if (item.typeOfItem != TypeOfItem && tkgCur + quantaty > tkg)
+            {
+                Debug.Log(" item is not same also tkg is insufficient: " + (tkg-tkgCur));
+            }
+            else if (item.typeOfItem != TypeOfItem) Debug.Log("item is not same");
+            else if (tkgCur + quantaty > tkg) Debug.Log("tkg is insufficient :" + (tkg - tkgCur));
         }
         foreach (var item in slots)
         {
-            if(item.typeOfItem == null && item.index < inventorySlotRight)
+            if(item.typeOfItem == null && item.index < inventorySlotRight && tkg + quantaty < tkgCur)
             {
                 item.typeOfItem = TypeOfItem;
-                item.count = 1;
+                item.count += quantaty;
+                tkgCur += quantaty;
+                Debug.Log(item.count);
                 return;
             }
         }
-        Debug.Log("Could not buy it.");
+        Debug.Log("Could not buy it. Type: " + TypeOfItem.name + " count: " + quantaty);
     }
-    public static void Transaction(GameObject TypeOfItem,out bool executed)//override for declaring decrease happend
+    public static void Transaction(GameObject TypeOfItem,out bool executed,int quantaty)//override for declaring decrease happend
     {
         executed = true;
         foreach (var item in slots)
         {
-            if (item.typeOfItem == TypeOfItem)
+            if (item.typeOfItem == TypeOfItem && tkgCur + quantaty <= tkg)
             {
-                item.count += 1;
+                item.count += quantaty;
+                tkgCur += quantaty;
                 return;
             }
         }
         foreach (var item in slots)
         {
-            if (item.typeOfItem == null && item.index < inventorySlotRight)
+            if (item.typeOfItem == null && item.index < inventorySlotRight && tkgCur + quantaty <= tkg)
             {
                 item.typeOfItem = TypeOfItem;
-                item.count = 1;
+                item.count += quantaty;
+                tkgCur += quantaty;
                 return;
             }
         }
@@ -107,34 +123,58 @@ public class InventoryOfPlayer : MonoBehaviour {
         Debug.Log("Could not buy it.");
     }
 
-    public static void BackTransaction(GameObject TypeOfItem)
+    public static void BackTransaction(GameObject TypeOfItem,int quantaty)
     {
         foreach (var item in slots)
         {
-            if (item.typeOfItem == TypeOfItem)
+            if (item.typeOfItem == TypeOfItem && item.count >= quantaty)
             {
-                if(item.count <= 1)
+                if(item.count - quantaty == 0)
                 {
                     item.typeOfItem = null;
                     item.count = 0;
+                    tkgCur = 0;
                 }
                 else
                 {
-                    item.count--;
+                    item.count -= quantaty;
+                    tkgCur -= quantaty;
                 }
                 return;
             }
         }
     }
-    public GameObject nuggetKahretsin;//iby
+
+    public static void BackTransaction(GameObject TypeOfItem, int quantaty,out bool executed)
+    {
+        executed = false;
+        foreach (var item in slots)
+        {
+            if (item.typeOfItem == TypeOfItem && item.count >= quantaty)
+            {
+                if (item.count - quantaty == 0)
+                {
+                    item.typeOfItem = null;
+                    item.count = 0;
+                    tkgCur = 0;
+                }
+                else
+                {
+                    item.count -= quantaty;
+                    tkgCur -= quantaty;
+                }
+                Debug.Log("type :" + item.typeOfItem + "count" + item.count);
+                executed = true;
+                return;
+            }
+        }
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N))//iby
-        {
-            Transaction(nuggetKahretsin);
-        }
         for(int i = 0; i < slots.Length; i++)
         {
+            slots[i].slotui = slotUIs[i];
             if(slots[i].typeOfItem != null)
             {
                 GameObject image = slotUIs[i].transform.GetChild(1).gameObject;

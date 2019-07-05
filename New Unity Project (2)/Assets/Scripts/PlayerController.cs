@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
                                 {
                                     GameObject recipe = Instantiate(Recipe, RecipeBook.transform);
                                     Image image = recipe.transform.GetChild(2).GetComponent<Image>();
+                                    image.transform.localScale *= 0.6f;
                                     Text text = recipe.transform.GetChild(0).GetComponent<Text>();
                                     text.text = item.name.ToUpper();
                                     if (item.GetComponent<MealMaterial>())
@@ -81,7 +82,7 @@ public class PlayerController : MonoBehaviour
                                         image.sprite = item.GetComponent<Meal>().image;
                                     }
                                 }
-                                GameObject.FindObjectOfType<RecipeController>().GetToggles();
+                                FindObjectOfType<RecipeController>().GetToggles();
                             }
                         }
                         else if (hit.transform.parent.CompareTag("station"))
@@ -153,7 +154,7 @@ public class PlayerController : MonoBehaviour
                 ped3.position = Input.mousePosition;
                 List<RaycastResult> results3 = new List<RaycastResult>();
                 gr3.Raycast(ped3, results3);
-                Debug.Log(results3.Count);
+               // Debug.Log(results3.Count);
                 if (results.Count > 0)
                 {
 
@@ -178,6 +179,13 @@ public class PlayerController : MonoBehaviour
                     inventory.SetActive(false);
                     marketInventory.SetActive(false);
                     PlayerController.current = null;
+                    foreach (GameObject item in PlayerSlot.adjusters)
+                    {
+                        if (item)
+                        {
+                            item.SetActive(false);
+                        }
+                    }
                     /*OrdersMenuController.open = false;
                     OrdersMenuController.atStation = false;*/
                 }

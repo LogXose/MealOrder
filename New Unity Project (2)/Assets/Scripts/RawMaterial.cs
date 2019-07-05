@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class RawMaterial : MonoBehaviour {
-    public int Price;
+    public float Price;
     public enum unit
     {
         kilogram,
@@ -12,4 +12,6 @@ public class RawMaterial : MonoBehaviour {
     }
     public unit Unit;
     public Sprite image;
+    public bool countable = true;
+    public int minQuant = 50;
 }

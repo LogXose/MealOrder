@@ -10,8 +10,8 @@ public class BuyingButton : MonoBehaviour, IPointerClickHandler
     public UnityEvent middleClick;
     public UnityEvent rightClick;
     public GameObject represent;
-    public int price = 0;
-
+    public float price = 0;
+    public int quantaty = 1;
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Left)
@@ -19,7 +19,7 @@ public class BuyingButton : MonoBehaviour, IPointerClickHandler
             if(InventoryOfPlayer.Money >= price)
             {
                 bool execution = false;
-                InventoryOfPlayer.Transaction(represent,out execution);
+                InventoryOfPlayer.Transaction(represent,out execution,quantaty);
                 if (execution)
                 {
                     InventoryOfPlayer.Money -= price;

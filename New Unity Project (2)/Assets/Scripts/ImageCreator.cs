@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 public class ImageCreator : MonoBehaviour {
     bool inventoryOpen = false;
     public GameObject avatar;
@@ -21,14 +22,18 @@ public class ImageCreator : MonoBehaviour {
     public static InventorySlot[] slots = new InventorySlot[8] { slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8 };
     [SerializeField]
     GameObject slotPrefab;
-
-    /*public void triggerCreate()
+    int Count = 0;
+    public static GameObject stationCap;
+    [SerializeField] GameObject _count;
+    bool changed = true;
+    
+    public void GetQuantaty()
     {
-        Create();
-    }*/
-
+        Count = int.Parse(_count.GetComponent<InputField>().text);
+    }
     public void Create()
     {
+        GetQuantaty();
         GameObject Output = RecipeController.GetRecipe();
         int[] takeFromInventory = new int[8];
         int[] takeFromStation = new int[8];
@@ -48,77 +53,25 @@ public class ImageCreator : MonoBehaviour {
             }
         }
 
-        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
         for (int i = 0; i < 8; i++)
         {
-            for (int j = 0; j < slots[i].unitCount*Count; j++)
+            if (slots[i].unitCount * Count > takeFromStation[i])
             {
-                if(takeFromStation[i] > 0)
-                {
-                    takeFromStation[i]--;
-                    Station.BackTransaction(slots[i].typeOfItem);
-                }
-                else
-                {
-                    takeFromInventory[i]--;
-                    InventoryOfPlayer.BackTransaction(slots[i].typeOfItem);
-                }
+                Station.BackTransaction(slots[i].typeOfItem, takeFromStation[i]);
+                int surplus = (int)(slots[i].unitCount * Count - takeFromStation[i]);
+                InventoryOfPlayer.BackTransaction(slots[i].typeOfItem, surplus);
             }
+            else
+            {
+                Station.BackTransaction(slots[i].typeOfItem, (int)slots[i].unitCount*Count);
+            }
+
+            
         }
-        //Station.Transaction(Output);
-        PlayerController.current.GetComponent<Station>().Create(Output);
+        PlayerController.current.GetComponent<Station>().Create(Output,Count);
         //GameObject[] outputAndCurrent = new GameObject[2] { Output, PlayerController.current };
         //StartCoroutine("animateAndCreate", outputAndCurrent);
     }
-
-    /*public static void Create()
-    {
-        
-        foreach (var good in InventoryOfPlayer.slots)
-        {
-            if (good.typeOfItem == item)
-            {
-                calculate += good.count;
-                break;
-            }
-        }
-        foreach (var good in PlayerController.current.GetComponent<Station>().inventory)
-        {
-            if (good.typeOfItem == item)
-            {
-                calculate += good.count;
-                break;
-            }
-        }*/
-            
-        /* bool control = false;
-         for(int i = 0; i < slots.Length; i++)
-         {
-             if(slots[i].typeOfItem != null)
-             {
-                 if(slots[i].count > 0)
-                 {
-                     control = true;
-                 }
-                 else
-                 {
-                     control = false;
-                     break;
-                 }
-             }
-         }
-         if (control)
-         {
-             for (int i = 0; i < slots.Length; i++)
-             {
-                 if (slots[i].typeOfItem != null)
-                 {
-                     slots[i].count--;
-                 }
-             }
-             Station.Transaction(willCreate);
-         }
-    }*/
 
     public static void TakeIn(GameObject sended,out bool decrease)
     {
@@ -138,11 +91,8 @@ public class ImageCreator : MonoBehaviour {
     {
         for (int i = 0; i < slots.Length; i++)
         {
-            while(slots[i].count > 0)
-            {
-                slots[i].count--;
-                Station.Transaction(slots[i].typeOfItem);
-            }
+            Station.Transaction(slots[i].typeOfItem, slots[i].count);
+            slots[i].count = 0;
         }
     }
 
@@ -165,7 +115,7 @@ public class ImageCreator : MonoBehaviour {
         public GameObject typeOfItem;
         public int count;
         public int index;
-        public int unitCount;
+        public float unitCount;
         public Sprite GetSprite()
         {
             switch (GetMaterialType())
@@ -189,34 +139,7 @@ public class ImageCreator : MonoBehaviour {
     void Update () {
         DefiningOFSlotsGOs();
         UIArrangements();
-        CountChanger();
-    }
-
-    void CountChanger()
-    {
-        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            Count++;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && Count > 1)
-        {
-            Count--;
-        }
-        transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text = Count.ToString();
-    }
-    public void IncreaseCount()
-    {
-        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
-        Count++;
-        transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text = Count.ToString();
-    }
-    public void DecreaseCount()
-    {
-        int Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
-        if (Count == 1) return;
-        Count--;
-        transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text = Count.ToString();
+        updateStationCapacityText();
     }
     public GameObject OutputFinder(string name)
     {
@@ -239,67 +162,74 @@ public class ImageCreator : MonoBehaviour {
     {
         GameObject Output = RecipeController.GetRecipe();
         GameObject[] inputs= new GameObject[1];
-        int[] counts = new int[5];
-        if (Output.GetComponent<MealMaterial>() != null)
+        float [] counts = new float[5];
+        if(Output != null)
         {
-            inputs = Output.GetComponent<MealMaterial>().Inputs;
-            counts = Output.GetComponent<MealMaterial>().InputCount;
-        }
-        else if (Output.GetComponent<Meal>() != null)
-        {
-            inputs = Output.GetComponent<Meal>().Inputs;
-            counts = Output.GetComponent<Meal>().InputCount;
-        }
-        Debug.Log(inputs[0]);
-        for (int i = 0;i < inputs.Length; i++)
-        {
-            slots[i].typeOfItem = inputs[i];
-            slots[i].unitCount = counts[i];
-        }
-        for (int i = inputs.Length; i < slots.Length; i++)
-        {
-            slots[i].typeOfItem = null;
+            if (Output.GetComponent<MealMaterial>() != null)
+            {
+                inputs = Output.GetComponent<MealMaterial>().Inputs;
+                counts = Output.GetComponent<MealMaterial>().InputCount;
+            }
+            else if (Output.GetComponent<Meal>() != null)
+            {
+                inputs = Output.GetComponent<Meal>().Inputs;
+                counts = Output.GetComponent<Meal>().InputCount;
+            }
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                slots[i].typeOfItem = inputs[i];
+                slots[i].unitCount = counts[i];
+            }
+            for (int i = inputs.Length; i < slots.Length; i++)
+            {
+                slots[i].typeOfItem = null;
+            }
         }
     }
 
     void UIArrangements()
     {
-        int Count = 0;
+        
         GameObject Output = RecipeController.GetRecipe();
-        if (Output.GetComponent<MealMaterial>() != null)
+        if (!PlayerController.current.GetComponent<Station>().crafting)
         {
-            avatar.GetComponent<Image>().sprite = Output.GetComponent<MealMaterial>().image;
-            avatar.GetComponent<Image>().color = Color.white;
-            label.GetComponent<Text>().text = Output.name;
-            GameObject definition = transform.parent.GetChild(3).gameObject;
-            definition.GetComponent<Text>().text = Output.GetComponent<MealMaterial>().Definition;
-            Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
-            GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
-            int unitTimeTimesCount = Output.GetComponent<MealMaterial>().unitTime * Count;
-            int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
-            int second = unitTimeTimesCount % 60;
-            string _time = minute.ToString("00") + ":" + second.ToString("00");
-            Time.GetComponent<Text>().text = _time;
+            if(Output != null)
+            {
+                if (Output.GetComponent<MealMaterial>() != null)
+                {
+                    avatar.GetComponent<Image>().sprite = Output.GetComponent<MealMaterial>().image;
+                    avatar.GetComponent<Image>().color = Color.white;
+                    label.GetComponent<Text>().text = Output.name;
+                    GameObject definition = transform.parent.GetChild(3).gameObject;
+                    definition.GetComponent<Text>().text = Output.GetComponent<MealMaterial>().Definition;
+                    GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+                    int unitTimeTimesCount = Mathf.FloorToInt(Output.GetComponent<MealMaterial>().unitTime * Count);
+                    int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
+                    int second = unitTimeTimesCount % 60;
+                    string _time = minute.ToString("00") + ":" + second.ToString("00");
+                    Time.GetComponent<Text>().text = _time;
+                }
+                else if (Output.GetComponent<Meal>() != null)
+                {
+                    avatar.GetComponent<Image>().sprite = Output.GetComponent<Meal>().image;
+                    avatar.GetComponent<Image>().color = Color.white;
+                    label.GetComponent<Text>().text = Output.name;
+                    GameObject definition = transform.parent.GetChild(3).gameObject;
+                    definition.GetComponent<Text>().text = Output.GetComponent<Meal>().Definition;
+                    GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+                    int unitTimeTimesCount = Mathf.FloorToInt(Output.GetComponent<Meal>().unitTime * Count);
+                    int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
+                    int second = unitTimeTimesCount % 60;
+                    string _time = minute.ToString("00") + ":" + second.ToString("00");
+                    Time.GetComponent<Text>().text = _time;
+                }
+                else
+                {
+                    avatar.GetComponent<Image>().sprite = defaultSprite;
+                }
+            }
         }
-        else if (Output.GetComponent<Meal>() != null)
-        {
-            avatar.GetComponent<Image>().sprite = Output.GetComponent<Meal>().image;
-            avatar.GetComponent<Image>().color = Color.white;
-            label.GetComponent<Text>().text = Output.name;
-            GameObject definition = transform.parent.GetChild(3).gameObject;
-            definition.GetComponent<Text>().text = Output.GetComponent<Meal>().Definition;
-            Count = int.Parse(transform.parent.GetChild(9).GetChild(0).gameObject.GetComponent<Text>().text);
-            GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
-            int unitTimeTimesCount = Output.GetComponent<Meal>().unitTime * Count;
-            int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
-            int second = unitTimeTimesCount % 60;
-            string _time = minute.ToString("00") + ":" + second.ToString("00");
-            Time.GetComponent<Text>().text = _time;
-        }
-        else
-        {
-            avatar.GetComponent<Image>().sprite = defaultSprite;
-        }
+       
 
         for (int i = 0; i < 8; i++)
         {
@@ -308,6 +238,8 @@ public class ImageCreator : MonoBehaviour {
                 slotUIs[i].SetActive(true);
                 GameObject image = slotUIs[i].transform.GetChild(1).gameObject;
                 GameObject label = slotUIs[i].transform.GetChild(2).gameObject;
+                Text text = slotUIs[i].transform.GetChild(3).GetComponent<Text>();
+                text.text = slots[i].typeOfItem.name;
                 image.GetComponent<Image>().sprite = slots[i].GetSprite();
                 image.GetComponent<Image>().color = Color.white;
                 label.GetComponent<Text>().text = supplyCalculator(slots[i].typeOfItem) +"/"+slots[i].unitCount*Count;//buraya station deposundaki + inventorydeki malzeme miktarinin toplami yazilacaak
@@ -368,5 +300,16 @@ public class ImageCreator : MonoBehaviour {
             }
         }
         return calculate;
+    }
+    private void Start()
+    {
+        stationCap = GameObject.FindGameObjectWithTag("StationCapacity");
+    }
+
+    public static void updateStationCapacityText()
+    {
+        Text text = stationCap.transform.GetChild(0).GetComponent<Text>();
+        if(text)
+        text.text = PlayerController.current.GetComponent<Station>().capacityCur.ToString() + "/" + PlayerController.current.GetComponent<Station>().capacity.ToString();
     }
 }

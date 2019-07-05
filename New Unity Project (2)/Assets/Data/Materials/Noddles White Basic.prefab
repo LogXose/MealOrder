@@ -53,8 +53,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Inputs:
   - {fileID: 1513643575099154, guid: a9176fce8ff2a4d40bd8d52d16042657, type: 2}
-  Station: []
+  stationType: 0
   image: {fileID: 21300000, guid: 8c8323ecf826a974bb8508707febc94c, type: 3}
   Definition: Fundamentals of Italian Pasta Empire.
-  InputCount: 0100000001000000
-  unitTime: 60
+  InputCount:
+  - 1
+  unitTime: 21
+  minQuant: 0
+  countable: 0

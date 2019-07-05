@@ -16,7 +16,9 @@ public class RecipeController : MonoBehaviour {
     public bool crafting = false;
     public static GameObject GetRecipe()
     {
+        if(recipes.Length > 0)
         return recipes[index];
+        return null;
     }
     // Use this for initialization
     public void GetToggles () {
@@ -36,9 +38,12 @@ public class RecipeController : MonoBehaviour {
         }
         else
         {
-            toggles[0].isOn = true;
-            toggled = toggles[0];
-
+            if(toggles.Length < 0)
+            {
+                Debug.Log(toggles.Length);
+                toggles[0].isOn = true;
+                toggled = toggles[0];
+            }
         }
     }
     public void clean()

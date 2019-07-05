@@ -363,10 +363,12 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   index: 0
   count: 0
-  placeHolder: {fileID: 21300000, guid: bb836d4e409ef4e6e88833c25521a84e, type: 3}
+  placeHolder: {fileID: 21300000, guid: db41cd2862b2240ffbd2d8a2daad8da7, type: 3}
   full: {fileID: 8300000, guid: 9f35106e76c6c40fa9c9e04a7cd7dca6, type: 3}
   empty: {fileID: 8300000, guid: 7bacdf65eeeb349fa91b5cfbc9f00567, type: 3}
   close: {fileID: 8300000, guid: caacc0490ff424545a46ee73449d0754, type: 3}
+  adjuster: {fileID: 0}
+  adjusterPosition: {x: 183, y: 212}
 --- !u!114 &114758070347926032
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -382,6 +384,7 @@ MonoBehaviour:
   onHoverAlpha: 0.6
   onClickAlpha: 0.4
   close: 0
+  pickerItem: 0
   onClicked:
     m_PersistentCalls:
       m_Calls:
@@ -445,7 +448,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -100}
+  m_AnchoredPosition: {x: 100, y: -110}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224459606467611536

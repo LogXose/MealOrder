@@ -18,6 +18,11 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
     public AudioClip empty;
     public AudioClip close;
     Color blue;
+    [SerializeField] GameObject adjuster;
+    [SerializeField] int xx;
+    [SerializeField] int yy;
+    int sendQuantaty;
+    GameObject represent;
 
     enum State
     {
@@ -28,10 +33,12 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
     {
         index = indexAccordingToParent();
         blue = transform.GetChild(1).GetComponent<Image>().color;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Update()
     {
+        UpdateAdjuster();
         station = PlayerController.current.GetComponent<Station>();
         if (8 > index)
         {
@@ -69,11 +76,91 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(station.inventory[index].typeOfItem != null)
+
+        if (station.inventory[index].typeOfItem != null)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
-            {
-                InventoryOfPlayer.Transaction(station.inventory[index].typeOfItem, out decrease);
+            { 
+                represent = station.inventory[index].typeOfItem;
+                if (!adjuster.activeInHierarchy)
+                {
+                    int tkg = InventoryOfPlayer.tkg;
+                    int tkgCur = InventoryOfPlayer.tkgCur;
+                    adjuster.SetActive(true);
+                    int yyFactor = Mathf.FloorToInt(index / 4);
+                    int xxFactor = index % 4;
+                    Station.adjusterIndex = index;
+                    adjuster.GetComponent<RectTransform>().localPosition = new Vector3(992 + xx * xxFactor, 202 - yy * yyFactor);
+                    int Count = station.inventory[index].count;
+                    if (represent.GetComponent<Meal>())
+                    {
+                        Meal meal = represent.GetComponent<Meal>();
+                        Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                        Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                        slider.wholeNumbers = true;
+                        slider.maxValue = tkg - tkgCur > Count? Mathf.FloorToInt(Count / meal.minQuant) : (tkg - tkgCur) / meal.minQuant;
+                        slider.value = 1;
+                        textComp.text = meal.minQuant.ToString();
+                        sendQuantaty = meal.minQuant;
+                    }
+                    else if (represent.GetComponent<MealMaterial>())
+                    {
+                        MealMaterial mealMaterial = represent.GetComponent<MealMaterial>();
+                        if (mealMaterial.countable)
+                        {
+                            Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                            Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                            slider.wholeNumbers = true;
+                            slider.maxValue = tkg - tkgCur > Count ? Count : tkg - tkgCur;
+                            slider.value = 1;
+                            textComp.text = 1.ToString();
+                            sendQuantaty = 1;
+                        }
+                        else if (!mealMaterial.countable)
+                        {
+                            MealMaterial meal = represent.GetComponent<MealMaterial>();
+                            Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                            Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                            slider.wholeNumbers = true;
+                            slider.maxValue = tkg - tkgCur > Count ? Mathf.FloorToInt(Count / meal.minQuant) : (tkg - tkgCur) / meal.minQuant;
+                            slider.value = 1;
+                            textComp.text = meal.minQuant.ToString();
+                            sendQuantaty = meal.minQuant;
+                        }
+                    }
+                    else if (represent.GetComponent<RawMaterial>())
+                    {
+                        RawMaterial raw = represent.GetComponent<RawMaterial>();
+                        if (raw.countable)
+                        {
+                            Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                            Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                            slider.wholeNumbers = true;
+                            slider.maxValue = tkg - tkgCur > Count ? Count : tkg - tkgCur;
+                            slider.value = 1;
+                            textComp.text = 1.ToString();
+                            sendQuantaty = 1;
+                        }
+                        else if (!raw.countable)
+                        {
+                            RawMaterial meal = raw;
+                            Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                            Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                            slider.wholeNumbers = true;
+                            slider.maxValue = tkg - tkgCur > Count ? Mathf.FloorToInt(Count / meal.minQuant) : (tkg - tkgCur) / meal.minQuant;
+                            slider.value = 1;
+                            textComp.text = meal.minQuant.ToString();
+                            sendQuantaty = meal.minQuant;
+                        }
+                    }
+                    Station.sendQuantaty = sendQuantaty;
+                }
+                else
+                {
+                    adjuster.SetActive(false);
+                }
+                
+                
             }
             else if (eventData.button == PointerEventData.InputButton.Middle)
             {
@@ -133,5 +220,75 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
             default:
                 break;
         }
+    }
+
+    public void Transfer()
+    {
+        Station.Transfer();
+        ImageCreator.updateStationCapacityText();
+    }
+
+    void UpdateAdjuster()
+    {
+        if(index == Station.adjusterIndex)
+        {
+            if (adjuster.activeInHierarchy)
+            {
+                int tkg = InventoryOfPlayer.tkg;
+                int tkgCur = InventoryOfPlayer.tkgCur;
+                int Count = station.inventory[index].count;
+                if (represent.GetComponent<Meal>())
+                {
+                    Meal meal = represent.GetComponent<Meal>();
+                    Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                    Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                    slider.maxValue = tkg - tkgCur > Count ? Mathf.FloorToInt(Count / meal.minQuant) : (tkg - tkgCur) / meal.minQuant;
+                    sendQuantaty = (int)slider.value * meal.minQuant;
+                    textComp.text = sendQuantaty.ToString();
+                }
+                else if (represent.GetComponent<MealMaterial>())
+                {
+                    MealMaterial mealMaterial = represent.GetComponent<MealMaterial>();
+                    if (mealMaterial.countable)
+                    {
+                        Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                        Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                        slider.maxValue = tkg - tkgCur > Count ? Count : tkg - tkgCur;
+                        sendQuantaty = (int)slider.value;
+                        textComp.text = sendQuantaty.ToString();
+                    }
+                    else if (!mealMaterial.countable)
+                    {
+                        Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                        Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                        slider.maxValue = tkg - tkgCur > Count ? Mathf.FloorToInt(Count / mealMaterial.minQuant) : (tkg - tkgCur) / mealMaterial.minQuant;
+                        sendQuantaty = (int)slider.value * mealMaterial.minQuant;
+                        textComp.text = sendQuantaty.ToString();
+                    }
+                }
+                else if (represent.GetComponent<RawMaterial>())
+                {
+                    RawMaterial raw = represent.GetComponent<RawMaterial>();
+                    if (raw.countable)
+                    {
+                        Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                        Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                        slider.maxValue = tkg - tkgCur > Count ? Count : tkg - tkgCur;
+                        sendQuantaty = (int)slider.value;
+                        textComp.text = sendQuantaty.ToString();
+                    }
+                    else if (!raw.countable)
+                    {
+                        Slider slider = adjuster.transform.GetChild(4).GetComponent<Slider>();
+                        Text textComp = adjuster.transform.GetChild(3).GetChild(0).GetComponent<Text>();
+                        slider.maxValue = tkg - tkgCur > Count ? Mathf.FloorToInt(Count / raw.minQuant) : (tkg - tkgCur) / raw.minQuant;
+                        sendQuantaty = (int)slider.value * raw.minQuant;
+                        textComp.text = sendQuantaty.ToString();
+                    }
+                }
+                Station.sendQuantaty = sendQuantaty;
+            }
+        }
+        
     }
 }

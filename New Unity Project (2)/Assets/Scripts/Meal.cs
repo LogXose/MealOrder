@@ -7,6 +7,8 @@ public class Meal : MonoBehaviour {
     public GameObject[] Station;
     public Sprite image;
     public string Definition;
-    public int[] InputCount;
-    public int unitTime;
+    public float[] InputCount;
+    public float unitTime = 0;
+    public float price = 99.65f;
+    public int minQuant = 0;
 }

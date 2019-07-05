@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class MealMaterial : MonoBehaviour {
     public GameObject[] Inputs;
-    public GameObject[] Station;
+    public Station.StationType stationType;
     public Sprite image;
     public string Definition;
-    public int[] InputCount;
-    public int unitTime;
+    public float[] InputCount;
+    public float unitTime;
+    public int minQuant = 0;
+    public bool countable = false;
 }

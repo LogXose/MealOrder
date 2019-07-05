@@ -18,6 +18,7 @@ TagManager:
   - kind
   - shape
   - flour
+  - StationCapacity
   layers:
   - Default
   - TransparentFX

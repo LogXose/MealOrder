@@ -51,6 +51,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c17af46b591eb54483264457a0c3fa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Price: 1
+  Price: 0.009267
   Unit: 2
   image: {fileID: 21300000, guid: d45b5d6633694244a9b8055f0f3167fe, type: 3}
+  countable: 1
+  minQuant: 200

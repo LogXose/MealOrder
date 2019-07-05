@@ -2,8 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System;
 public class Station : MonoBehaviour {
+
+    public static Dictionary<StationType, List<GameObject>> stationOutputList = new Dictionary<StationType, List<GameObject>>();
+    public static int adjusterIndex;
+    public static int sendQuantaty;
+    public Station()
+    {
+        if (stationOutputList.Count == 0)
+        {
+            foreach (StationType item in Enum.GetValues(typeof(StationType)))
+            {
+                stationOutputList.Add(item, new List<GameObject>());
+            }
+        }
+    }
+
+    private void Start()
+    {
+        Outputs = stationOutputList[stationType].ToArray();
+    }
+    public int capacity = 10000;
+    public int capacityCur = 0;
     public class InventorySlot
     {
         public enum MaterialType
@@ -28,7 +49,6 @@ public class Station : MonoBehaviour {
         public int index;
         public Sprite GetSprite()
         {
-            Debug.Log(typeOfItem);
             switch (GetMaterialType())
             {
                 case MaterialType.meal:
@@ -68,20 +88,27 @@ public class Station : MonoBehaviour {
     }
     public StationType stationType;
     public Sprite icon;
-
+    public int stationIndex;
+    public GameObject stationPrefab;
+    public Vector3 stationPosition;
+    public int creatingQuantaty;
+    public GameObject creatingOutput;
     private void Awake()
     {
         inventory = new InventorySlot[8] { slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8 };
     }
 
-    public static void Transaction(GameObject sended)
+    public static void Transaction(GameObject sended,int quantaty)
     {
         GameObject current = PlayerController.current;
+        Station station = current.GetComponent<Station>();
         for (int i = 0; i < 8; i++)
         {
-            if (current.GetComponent<Station>().inventory[i].typeOfItem == sended)
+            if (current.GetComponent<Station>().inventory[i].typeOfItem == sended && station.capacityCur + quantaty < station.capacity)
             {
-                current.GetComponent<Station>().inventory[i].count++;
+                current.GetComponent<Station>().inventory[i].count += quantaty;
+                current.GetComponent<Station>().capacityCur += quantaty;
+                ImageCreator.updateStationCapacityText();
                 return;
             }
         }
@@ -90,59 +117,83 @@ public class Station : MonoBehaviour {
             if (current.GetComponent<Station>().inventory[i].typeOfItem == null)
             {
                 current.GetComponent<Station>().inventory[i].typeOfItem = sended;
-                current.GetComponent<Station>().inventory[i].count = 1;
+                current.GetComponent<Station>().inventory[i].count += quantaty;
+                station.capacityCur += quantaty;
+                ImageCreator.updateStationCapacityText();
                 return;
             }
         }
     }
-    public void TransactionIE(GameObject current,GameObject sended)
+    public void TransactionIE(GameObject current,GameObject sended,int quantaty)
     {
+        Station station = current.GetComponent<Station>();
         for (int i = 0; i < 8; i++)
         {
-            if (current.GetComponent<Station>().inventory[i].typeOfItem == sended)
+            if (current.GetComponent<Station>().inventory[i].typeOfItem == sended && station.capacityCur + quantaty < station.capacity)
             {
-                current.GetComponent<Station>().inventory[i].count++;
+                current.GetComponent<Station>().inventory[i].count += quantaty;
+                station.capacityCur += quantaty;
+                ImageCreator.updateStationCapacityText();
                 return;
             }
         }
         for (int i = 0; i < 8; i++)
         {
-            if (current.GetComponent<Station>().inventory[i].typeOfItem == null)
+            if (current.GetComponent<Station>().inventory[i].typeOfItem == null && station.capacityCur + quantaty < station.capacity)
             {
                 current.GetComponent<Station>().inventory[i].typeOfItem = sended;
-                current.GetComponent<Station>().inventory[i].count = 1;
+                current.GetComponent<Station>().inventory[i].count += quantaty;
+                station.capacityCur += quantaty;
+                ImageCreator.updateStationCapacityText();
                 return;
             }
         }
     }
-    public static void BackTransaction(GameObject item)
+    public static void BackTransaction(GameObject item,int quantaty)
     {
         GameObject current = PlayerController.current;
         for (int i = 0; i < 8; i++)
         {
             if (current.GetComponent<Station>().inventory[i].typeOfItem == item)
             {
-                current.GetComponent<Station>().inventory[i].count--;
+                current.GetComponent<Station>().inventory[i].count -= quantaty;
+                ImageCreator.updateStationCapacityText();
                 return;
             }
         }
     }
-    public void Create(GameObject Output)
+
+    public struct ieStruct
     {
-        StartCoroutine("animateAndCreate", Output);
+        public GameObject Output;
+        public int quant;
+        public float time;
     }
 
-    IEnumerator animateAndCreate(GameObject Output)
+    public void Create(GameObject Output,int quantaty)
     {
-        int Count = int.Parse(CountGO.transform.GetChild(0).GetComponent<Text>().text);
+        creatingQuantaty = quantaty;
+        ieStruct paket;
+        paket.Output = Output;
+        paket.quant = quantaty;
+        paket.time = 0;
+        StartCoroutine("animateAndCreate", paket);
+    }
+
+    IEnumerator animateAndCreate(ieStruct Paket)
+    {
+        int Count = int.Parse(CountGO.transform.GetChild(1).GetComponent<Text>().text);
         int unitTimeTimesCount = 0;
+        GameObject Output = Paket.Output;
+        creatingOutput = Paket.Output;
+        int quantaty = Paket.quant;
         if (Output.GetComponent<MealMaterial>())
         {
-            unitTimeTimesCount = Output.GetComponent<MealMaterial>().unitTime * Count;
+            unitTimeTimesCount = Mathf.FloorToInt(Output.GetComponent<MealMaterial>().unitTime * Count);
         }
         else
         {
-            unitTimeTimesCount = Output.GetComponent<Meal>().unitTime * Count;
+            unitTimeTimesCount = Mathf.FloorToInt(Output.GetComponent<Meal>().unitTime * Count);
         }
         crafting = true;
         GetComponent<Animator>().SetTrigger("Work");
@@ -159,11 +210,33 @@ public class Station : MonoBehaviour {
         ButtonGO.GetComponent<BasicButton>().close = false;
         crafting = false;
         GetComponent<Animator>().SetTrigger("Stop");
-        for (int i = 0; i < Count; i++)
-        {
-            GetComponent<Station>().TransactionIE(gameObject, Output);
+        GetComponent<Station>().TransactionIE(gameObject, Output,quantaty);
+    }
 
-        }
+    public void Create(ieStruct paket)
+    {
+        StartCoroutine("leftAnimateAndCrate", paket);
+        Debug.Log("created");
+    }
+
+    public IEnumerator leftAnimateAndCrate(ieStruct paket)
+    {
+        crafting = true;
+        GetComponent<Animator>().SetTrigger("Work");
+        Counter = paket.time;
+        craftingGO = paket.Output;
+        ButtonGO.GetComponent<BasicButton>().close = true;
+        Color buttonColor = ButtonGO.GetComponent<Image>().color;
+        buttonColor.a = 0.3f;
+        ButtonGO.GetComponent<Image>().color = buttonColor;
+        yield return new WaitForSeconds(paket.time);
+        buttonColor.a = 1;
+        ButtonGO.GetComponent<Image>().color = buttonColor;
+        craftingGO = null;
+        ButtonGO.GetComponent<BasicButton>().close = false;
+        crafting = false;
+        GetComponent<Animator>().SetTrigger("Stop");
+        GetComponent<Station>().TransactionIE(gameObject, paket.Output, paket.quant);
     }
 
     private void Update()
@@ -173,20 +246,30 @@ public class Station : MonoBehaviour {
             Counter -= Time.deltaTime;
             if(PlayerController.current == gameObject)
             {
-                TimerGO.SetActive(true);
+                //TimerGO.SetActive(true);
                 int minute = Mathf.FloorToInt(Counter / 60);
                 int second = (int)Counter % 60;
                 string rest = minute.ToString("00") + ":" + second.ToString("00");
                 TimerGO.transform.GetChild(0).GetComponent<Text>().text = rest;
             }
-            else
+            /*else
             {
                 TimerGO.SetActive(false);
-            }
+            }*/
         }
-        else if(PlayerController.current == gameObject)
+        /*else if(PlayerController.current == gameObject)
         {
             TimerGO.SetActive(false);
+        }*/
+    }
+    public static void Transfer()
+    {
+        bool execution = false;
+        InventoryOfPlayer.Transaction(PlayerController.current.GetComponent<Station>().inventory[adjusterIndex].typeOfItem,out execution, sendQuantaty);
+        Debug.Log(InventoryOfPlayer.tkgCur);
+        if (execution) {
+            BackTransaction(PlayerController.current.GetComponent<Station>().inventory[adjusterIndex].typeOfItem, sendQuantaty);
+            Debug.Log(execution);
         }
     }
 }

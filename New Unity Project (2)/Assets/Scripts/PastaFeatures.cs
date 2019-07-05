@@ -131,8 +131,6 @@ public class PastaFeatures : MonoBehaviour
     public void PickCritiker(int i)
     {
         critiker = Instantiate(_critickers[i]);
-        
-        Debug.Log(critiker);
     }
 
     public void PointEvaluation()
@@ -237,7 +235,6 @@ public class PastaFeatures : MonoBehaviour
             if (point > 10) point = 10;
             else if (point < 0) point = 0;
             Image pointColor = _critickerList[i].transform.GetChild(2).GetComponent<Image>();
-            Debug.Log(point);
             pointColor.color = critiker.GetComponent<Criticker>().colors[Mathf.FloorToInt(point)-1];
             Text pointText = _critickerList[i].transform.GetChild(2).GetChild(0).GetComponent<Text>();
             if(point >= 10) pointText.text = point.ToString("00.0");
@@ -275,6 +272,8 @@ public class PastaFeatures : MonoBehaviour
         ExtrasClosed = ExtrasClosedLoc;
     }*/
 
+    
+
     public void ProfilePage()
     {
         page7.SetActive(true);
@@ -283,7 +282,7 @@ public class PastaFeatures : MonoBehaviour
         page7.transform.GetChild(5).GetComponent<Text>().text = mealDefSave;
 
         GameObject[] inputs = setInputs().ToArray();
-        int estimatedCost = CostEstimater(inputs);
+        float estimatedCost = CostEstimater(inputs);
         page7.transform.GetChild(8).GetComponent<Text>().text = estimatedCost.ToString()+"$";
         int counter = 0;
         Transform parent_ = page7.transform.GetChild(9).GetChild(1);
@@ -315,12 +314,13 @@ public class PastaFeatures : MonoBehaviour
             GameObject slot = parent_.GetChild(i).gameObject;
             slot.SetActive(false);
         }
+        DefineMeal(inputs);
     }
 
-    int CostEstimater(GameObject[] inputs)
+    float CostEstimater(GameObject[] inputs)
     {
 
-        int estimatedCost = 0;
+        float estimatedCost = 0;
         foreach (GameObject item in inputs)
         {
             if (item.GetComponent<RawMaterial>())
@@ -387,5 +387,105 @@ public class PastaFeatures : MonoBehaviour
             locInputs.Add(item);
         }
         return locInputs;
+    }
+
+    List<GameObject> setInputCount(List<GameObject> inputs)
+    {
+        int ctInpuy = inputs.Count;
+        List<float> returnable = new List<float>();
+        for (int i = 0; i < ctInpuy; i++)
+        {
+            if(i == 1)
+            {
+
+            }
+            else if(i == 0)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+        return null;
+    }
+
+    [SerializeField]GameObject producedMeal;
+
+    void DefineMeal(GameObject[] inputList)
+    {
+        producedMeal = new GameObject();
+        Meal meal = producedMeal.AddComponent<Meal>();
+        meal.Inputs = inputList;
+        int cter = 0;
+        meal.InputCount = new float[inputList.Length];
+        foreach (var item in inputList)
+        {
+            meal.InputCount[cter] = 1;//TODO: hacim sistemi ayarlandiktan sonra burayi duzelt quantatye gore #5.2
+            cter++;
+        }
+        meal.Definition = mealDefSave;
+        producedMeal.name = mealNameSave;
+        meal.unitTime = 20;
+    }
+
+    public void AddToList()
+    {
+        Station station = new Station();
+        MealList.producedMeals.Add(producedMeal);
+        Station.stationOutputList[Station.StationType.Boiler].Add(producedMeal);
+        DontDestroyOnLoad(producedMeal);
+        MaterialAssignments(producedMeal.GetComponent<Meal>().Inputs);
+    }
+
+    void MaterialAssignments(GameObject[] Inputs)
+    {
+        foreach (GameObject item in Inputs)
+        {
+            if (item.GetComponent<MealMaterial>())
+            {
+                bool thereIs = false;
+                foreach (GameObject mat in Station.stationOutputList[item.GetComponent<MealMaterial>().stationType])
+                {
+                    if (mat == item)
+                    {
+                        thereIs = true;
+                    }
+                }
+                if (!thereIs) Station.stationOutputList[item.GetComponent<MealMaterial>().stationType].Add(item);
+                foreach (GameObject mat in item.GetComponent<MealMaterial>().Inputs)
+                {
+                    if (mat.GetComponent<MealMaterial>())
+                    {
+                        MaterialAssignments(item.GetComponent<MealMaterial>().Inputs);
+                    }
+                    else if (mat.GetComponent<RawMaterial>())
+                    {
+                        AddShopList(mat);
+                    }
+                }
+            }else if (item.GetComponent<RawMaterial>())
+            {
+                AddShopList(item);
+            }
+        }
+    }
+
+    void AddShopList(GameObject rawMaterial)
+    {
+        ShopController.items.Add(rawMaterial);
+        DontDestroyOnLoad(rawMaterial);
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftControl) && producedMeal)
+        {
+            AddToList();
+            foreach (var item in GameObject.FindGameObjectsWithTag("station"))
+            {
+                item.GetComponent<Station>().Outputs = Station.stationOutputList[item.GetComponent<Station>().stationType].ToArray();
+            }
+        }
     }
 }
