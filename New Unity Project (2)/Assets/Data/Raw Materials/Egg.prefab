@@ -53,6 +53,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Price: 0.009267
   Unit: 2
-  image: {fileID: 21300000, guid: d45b5d6633694244a9b8055f0f3167fe, type: 3}
+  image: {fileID: 21300000, guid: 4583797e398f038498492312a65a12a2, type: 3}
   countable: 1
   minQuant: 200
+  qualityIndex: 0
+  req: 0

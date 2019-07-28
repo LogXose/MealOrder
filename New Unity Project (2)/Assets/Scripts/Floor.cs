@@ -5,6 +5,7 @@ using UnityEngine;
 public class Floor : MonoBehaviour {
     public UnityEngine.Material[] materials;
     public bool onIt = false;
+    public bool onStation = false;
     private void Update()
     {
         if(onIt)

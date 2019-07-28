@@ -208,6 +208,8 @@ public class ImageCreator : MonoBehaviour {
                     int second = unitTimeTimesCount % 60;
                     string _time = minute.ToString("00") + ":" + second.ToString("00");
                     Time.GetComponent<Text>().text = _time;
+                    transform.parent.GetChild(11).GetComponent<Text>().text = "gr";
+                    transform.parent.GetChild(11).GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                 }
                 else if (Output.GetComponent<Meal>() != null)
                 {
@@ -222,6 +224,8 @@ public class ImageCreator : MonoBehaviour {
                     int second = unitTimeTimesCount % 60;
                     string _time = minute.ToString("00") + ":" + second.ToString("00");
                     Time.GetComponent<Text>().text = _time;
+                    transform.parent.GetChild(11).GetComponent<Text>().text = "Por.";
+                    transform.parent.GetChild(11).GetComponent<Text>().alignment = TextAnchor.MiddleRight;
                 }
                 else
                 {
@@ -309,7 +313,7 @@ public class ImageCreator : MonoBehaviour {
     public static void updateStationCapacityText()
     {
         Text text = stationCap.transform.GetChild(0).GetComponent<Text>();
-        if(text)
+        if(PlayerController.current != null)
         text.text = PlayerController.current.GetComponent<Station>().capacityCur.ToString() + "/" + PlayerController.current.GetComponent<Station>().capacity.ToString();
     }
 }

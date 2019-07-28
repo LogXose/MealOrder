@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
     public GameObject marketInventory;
     public bool marketInventoryOpen = false;
     public GameObject Recipe;
+    [SerializeField] public Region region;
+    public static Region _Region;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -28,10 +30,15 @@ public class PlayerController : MonoBehaviour
         inventory.SetActive(false);
         marketInventory.SetActive(false);
         PlayerSlot.playerInventory = charInventory;
+        if(!_Region)
+        _Region = region;
     }
-
+    float ctrD = 0;
+    float sumD = 0;
     void Update()
     {
+        ctrD++;
+        sumD += Time.deltaTime;
         Body.transform.localPosition = Vector3.zero;
         if (Input.GetMouseButtonDown(0))
         {
@@ -85,8 +92,9 @@ public class PlayerController : MonoBehaviour
                                 FindObjectOfType<RecipeController>().GetToggles();
                             }
                         }
-                        else if (hit.transform.parent.CompareTag("station"))
+                        else if (hit.transform.parent != null)
                         {
+                            if (hit.transform.parent.CompareTag("station")) 
                             if (Vector3.Magnitude(hit.point - transform.position) < 10)
                             {
                                 inventoryOpen = true;

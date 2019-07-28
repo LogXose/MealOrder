@@ -12,4 +12,14 @@ public class MealMaterial : MonoBehaviour {
     public float unitTime;
     public int minQuant = 0;
     public bool countable = false;
+    public float qualityIndex;
+    public enum ReqForPasta
+    {
+        none,
+        low,
+        mid,
+        high,
+        veryHigh
+    }
+    public ReqForPasta reqForPasta = ReqForPasta.low;
 }

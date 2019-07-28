@@ -17,10 +17,10 @@ public class PastaFeatures : MonoBehaviour
 
     public GameObject[] _critickers;
 
-    public GameObject[] _kinds;
-    public GameObject[] _shapes;
-    public GameObject[] _flours;
-    public GameObject[] _extras;
+    public static List<GameObject> _kinds = new List<GameObject>();
+    public static List<GameObject> _shapes = new List<GameObject>();
+    public static List<GameObject> _flours = new List<GameObject>();
+    public static List<GameObject> _extras = new List<GameObject>();
     public GameObject[] _outputs;
     public GameObject[] _rawInputs;
     public GameObject[] _matInputs;
@@ -78,7 +78,7 @@ public class PastaFeatures : MonoBehaviour
     public static Dictionary<Station.StationType, int> StationTimeReducer = new Dictionary<Station.StationType, int>()
     { {Station.StationType.Boiler ,0},{Station.StationType.DoughCutter ,0},{Station.StationType.DoughKneader ,0} };
 
-    
+    Dictionary<Segmentation.CustomerSegmentation, float> pointsDict = new Dictionary<Segmentation.CustomerSegmentation, float>();
     public void DefinitionPageCheck()
     {
         if(!kind)
@@ -117,6 +117,7 @@ public class PastaFeatures : MonoBehaviour
             item.transform.GetChild(2).gameObject.SetActive(false);
             item.GetComponent<Button>().enabled = true;
             item.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
+            item.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = _critickers[i].GetComponent<Criticker>().price.ToString();
         }
         for (int i = critickerTech+1; i < 6; i++)
         {
@@ -125,12 +126,14 @@ public class PastaFeatures : MonoBehaviour
             item.GetComponent<Button>().enabled = false;
             item.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
             item.transform.GetChild(1).GetComponent<Button>().enabled = false;
+            item.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = _critickers[i].GetComponent<Criticker>().price.ToString();
         }
     }
 
     public void PickCritiker(int i)
     {
         critiker = Instantiate(_critickers[i]);
+        InventoryOfPlayer.Money -= _critickers[i].GetComponent<Criticker>().price;
     }
 
     public void PointEvaluation()
@@ -141,10 +144,14 @@ public class PastaFeatures : MonoBehaviour
         int[] stuID = kind.GetComponent<Kind>().students;
         int[] whiteID = kind.GetComponent<Kind>().whiteCollars;
         List<int[]> list = new List<int[]> { familyID, oldiesID, richID, stuID, whiteID };
+        List<Segmentation.CustomerSegmentation> enumList = new List<Segmentation.CustomerSegmentation> { Segmentation.CustomerSegmentation.families, Segmentation.CustomerSegmentation.oldies, Segmentation.CustomerSegmentation.richies, Segmentation.CustomerSegmentation.students, Segmentation.CustomerSegmentation.whiteCollars };
         List<float> listOfReels = new List<float> { ReelLezzetPuaniFamily,ReelLezzetPuaniOldies,ReelLezzetPuaniRichies,ReelLezzetPuaniStudents,
         ReelLezzetPuaniWhite};
         List<float> boostListForSegments = new List<float> { familiyBoost, oldiesBoost, richiesBoost, studentBoost, whiteCBoost };
         int counter = 0;
+        quality += qualityBoost;
+        quantative += quantativeBoost;
+        effort += effortBoost;
         foreach (int[] item in list)
         {
             float xSweet = Mathf.Abs(sweet - item[0]) / 50;
@@ -203,6 +210,7 @@ public class PastaFeatures : MonoBehaviour
             float flourFactor = flour.GetComponent<FlourType>().effectRate[counter] / 100.0f + 1;
             float boostFactor = boostListForSegments[counter] / 100.0f + 1;
             listOfReels[counter] = (alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
+            pointsDict.Add(enumList[counter], listOfReels[counter]);
             counter++;
         }
         for (int i = 0; i < 5; i++)
@@ -242,8 +250,136 @@ public class PastaFeatures : MonoBehaviour
             Image avatar = _critickerList[i].transform.GetChild(1).GetChild(1).GetComponent<Image>();
             avatar.sprite = critiker.GetComponent<Criticker>().icon[i];
         }
+        floatList = listOfReels;
     }
+    public void PointEvaluationWithoutRating()
+    {
+        int[] familyID = kind.GetComponent<Kind>().families;
+        int[] oldiesID = kind.GetComponent<Kind>().oldies;
+        int[] richID = kind.GetComponent<Kind>().richies;
+        int[] stuID = kind.GetComponent<Kind>().students;
+        int[] whiteID = kind.GetComponent<Kind>().whiteCollars;
+        List<int[]> list = new List<int[]> { familyID, oldiesID, richID, stuID, whiteID };
+        List<Segmentation.CustomerSegmentation> enumList = new List<Segmentation.CustomerSegmentation> { Segmentation.CustomerSegmentation.families, Segmentation.CustomerSegmentation.oldies, Segmentation.CustomerSegmentation.richies, Segmentation.CustomerSegmentation.students, Segmentation.CustomerSegmentation.whiteCollars };
+        List<float> listOfReels = new List<float> { ReelLezzetPuaniFamily,ReelLezzetPuaniOldies,ReelLezzetPuaniRichies,ReelLezzetPuaniStudents,
+        ReelLezzetPuaniWhite};
+        List<float> boostListForSegments = new List<float> { familiyBoost, oldiesBoost, richiesBoost, studentBoost, whiteCBoost };
+        int counter = 0;
+        quality += qualityBoost;
+        quantative += quantativeBoost;
+        effort += effortBoost;
+        foreach (int[] item in list)
+        {
+            float xSweet = Mathf.Abs(sweet - item[0]) / 50;
+            float sweetBooster = (100 - sweetBoost) / 100;
+            xSweet *= sweetBooster;
+            float ySweet = Mathf.Exp(2 * Mathf.Log(xSweet)) * 25;
+            float xSour = Mathf.Abs(sour - item[1]) / 50;
+            xSour *= (100 - sourBoost) / 100;
+            float ySour = Mathf.Exp(2 * Mathf.Log(xSour)) * 25;
+            float xBitter = Mathf.Abs(bitter - item[2]) / 50;
+            xBitter *= (100 - bitterBoost) / 100;
+            float yBitter = Mathf.Exp(2 * Mathf.Log(xBitter)) * 25;
+            float xSalty = Mathf.Abs(salty - item[3]) / 50;
+            xSalty *= (100 - saltyBoost) / 100;
+            float ySalty = Mathf.Exp(2 * Mathf.Log(xSalty)) * 25;
+            float alfaProfile = 100 - (yBitter + ySalty + ySour + ySweet) / 4;
 
+            float xJuicy = Mathf.Abs(juicy - item[4]) / 50;
+            xJuicy *= (100 - juicyBoost) / 100;
+            float yJuicy = Mathf.Exp(2 * Mathf.Log(xJuicy)) * 25;
+            float xCrunchy = Mathf.Abs(sour - item[5]) / 50;
+            xCrunchy *= (100 - crunchyBoost) / 100;
+            float yCrunchy = Mathf.Exp(2 * Mathf.Log(xCrunchy)) * 25;
+            float xSmooth = Mathf.Abs(smooth - item[6]) / 50;
+            xSmooth *= (100 - smoothBoost) / 100;
+            float ySmooth = Mathf.Exp(2 * Mathf.Log(xSmooth)) * 25;
+            float xSticky = Mathf.Abs(sticky - item[7]) / 50;
+            xSticky *= (100 - stickyBoost) / 100;
+            float ySticky = Mathf.Exp(2 * Mathf.Log(xSticky)) * 25;
+            float alfaTexture = 100 - (yJuicy + yCrunchy + ySmooth + ySticky) / 4;
+
+            float xQuantative = (quantative - item[8]) / 50;
+            float yQuantative = 0;
+            if (xQuantative >= 0) { yQuantative = -1 * SegmentSpecsFactor * xQuantative; }
+            else { yQuantative = Mathf.Exp(2 * Mathf.Log(-1 * xQuantative)) * 25; }
+            float xEffort = (effort - item[9]) / 50;
+            float yEffort = 0;
+            if (xEffort >= 0) { yEffort = -1 * SegmentSpecsFactor * xEffort; }
+            else { yEffort = Mathf.Exp(2 * Mathf.Log(-1 * xEffort)) * 25; }
+            float xQuality = (quality - item[10]) / 50;
+            float yQuality = 0;
+            if (xQuality >= 0) { yQuality = -1 * SegmentSpecsFactor * xQuality; }
+            else { yQuality = Mathf.Exp(2 * Mathf.Log(-1 * xQuality)) * 25; }
+            float alfaSegment = 100 - (yQuality + yQuantative + yEffort) / 3;
+            if (alfaSegment > 100) { alfaSegment = 100; }
+            else if (alfaSegment < 0) { alfaSegment = 0; }
+
+            float shapeFactor = 1;
+            for (int i = 0; i < shape.GetComponent<Shape>().affectedKinds.Length; i++)
+            {
+                if (shape.GetComponent<Shape>().affectedKinds[i] == kind)
+                {
+                    shapeFactor = shape.GetComponent<Shape>().effectRate[i] / 100.0f + 1;
+                }
+            }
+            float flourFactor = flour.GetComponent<FlourType>().effectRate[counter] / 100.0f + 1;
+            float boostFactor = boostListForSegments[counter] / 100.0f + 1;
+            listOfReels[counter] = (alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
+            pointsDict.Add(enumList[counter], listOfReels[counter]);
+            counter++;
+        }
+        /*for (int i = 0; i < 5; i++)
+        {
+            Text name = _critickerList[i].transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Text>();
+            name.text = critiker.GetComponent<Criticker>().critickerNames[i] + "(" + critiker.GetComponent<Criticker>().critickerTitle[i] + ") - "
+                + critiker.GetComponent<Criticker>().critickerSegmentation[i].ToString();
+            Text review = _critickerList[i].transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
+            float point = 0;
+            float errorChance = critiker.GetComponent<Criticker>().deviationRange;
+            switch (critiker.GetComponent<Criticker>().critickerSegmentation[i])
+            {
+                case Segmentation.CustomerSegmentation.oldies:
+                    point = listOfReels[1] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.students:
+                    point = listOfReels[3] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.whiteCollars:
+                    point = listOfReels[4] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.families:
+                    point = listOfReels[0] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+                case Segmentation.CustomerSegmentation.richies:
+                    point = listOfReels[2] - Random.Range(-errorChance, errorChance) * 2 / 100;
+                    break;
+            }
+
+            if (point > 10) point = 10;
+            else if (point < 0) point = 0;
+            Image pointColor = _critickerList[i].transform.GetChild(2).GetComponent<Image>();
+            pointColor.color = critiker.GetComponent<Criticker>().colors[Mathf.FloorToInt(point) - 1];
+            Text pointText = _critickerList[i].transform.GetChild(2).GetChild(0).GetComponent<Text>();
+            if (point >= 10) pointText.text = point.ToString("00.0");
+            else pointText.text = point.ToString("0.0");
+            Image avatar = _critickerList[i].transform.GetChild(1).GetChild(1).GetComponent<Image>();
+            avatar.sprite = critiker.GetComponent<Criticker>().icon[i];
+        }*/
+        floatList = listOfReels;
+    }
+    List<float> floatList;
+    void averageTaker()
+    {
+        float toplam = 0;
+        int counter = 0;
+        foreach (var item in floatList)
+        {
+            toplam += item;
+            counter++;
+        }
+        producedMeal.GetComponent<Meal>().realAveragePoint = toplam / counter;
+    }
     /*public static List<GameObject> KindsClosed;
     public static List<GameObject> ShapesClosed;
     public static List<GameObject> FlourTypesClosed;
@@ -280,10 +416,11 @@ public class PastaFeatures : MonoBehaviour
 
         page7.transform.GetChild(4).GetComponent<Text>().text = mealNameSave;
         page7.transform.GetChild(5).GetComponent<Text>().text = mealDefSave;
-
         GameObject[] inputs = setInputs().ToArray();
+        DefineMeal(inputs);
         float estimatedCost = CostEstimater(inputs);
-        page7.transform.GetChild(8).GetComponent<Text>().text = estimatedCost.ToString()+"$";
+        producedMeal.GetComponent<Meal>().estimatedCost = estimatedCost;
+        page7.transform.GetChild(8).GetComponent<Text>().text = estimatedCost.ToString(".00")+"$";
         int counter = 0;
         Transform parent_ = page7.transform.GetChild(9).GetChild(1);
         foreach (GameObject item in inputs)
@@ -296,7 +433,7 @@ public class PastaFeatures : MonoBehaviour
                 MealMaterial mealMaterial = item.GetComponent<MealMaterial>();
                 avatar.GetChild(1).GetComponent<Image>().sprite = mealMaterial.image;
                 avatar.GetChild(1).GetComponent<Image>().color = Color.white;
-                //avatar.GetChild(2).GetComponent<Text>().text = (kind.GetComponent<Kind>().inputCountBase[counter]*(1+quantative)*100).ToString();
+                avatar.GetChild(2).GetComponent<Text>().text = producedMeal.GetComponent<Meal>().InputCount[counter].ToString() + " gr";
                 avatar.GetChild(3).GetComponent<Text>().text = mealMaterial.name;
             }
             else if(item.GetComponent<RawMaterial>())
@@ -304,7 +441,7 @@ public class PastaFeatures : MonoBehaviour
                 RawMaterial mealMaterial = item.GetComponent<RawMaterial>();
                 avatar.GetChild(1).GetComponent<Image>().sprite = mealMaterial.image;
                 avatar.GetChild(1).GetComponent<Image>().color = Color.white;
-                //avatar.GetChild(2).GetComponent<Text>().text = (kind.GetComponent<Kind>().inputCountBase[counter] * quantative * 100).ToString();
+                avatar.GetChild(2).GetComponent<Text>().text = producedMeal.GetComponent<Meal>().InputCount[counter].ToString() + " gr";
                 avatar.GetChild(3).GetComponent<Text>().text = mealMaterial.name;
             }
             counter++;
@@ -314,38 +451,74 @@ public class PastaFeatures : MonoBehaviour
             GameObject slot = parent_.GetChild(i).gameObject;
             slot.SetActive(false);
         }
-        DefineMeal(inputs);
+        averageTaker();
     }
 
     float CostEstimater(GameObject[] inputs)
     {
 
         float estimatedCost = 0;
+        int ctr = 0;
         foreach (GameObject item in inputs)
         {
             if (item.GetComponent<RawMaterial>())
             {
-                estimatedCost += item.GetComponent<RawMaterial>().Price;
+                float inputCnt = producedMeal.GetComponent<Meal>().InputCount[ctr];
+                estimatedCost += item.GetComponent<RawMaterial>().Price * inputCnt;
             }
             else
             {
                 GameObject[] inputsOfMaterial = item.GetComponent<MealMaterial>().Inputs;
+                float inputCnt = producedMeal.GetComponent<Meal>().InputCount[ctr];
                 foreach (GameObject GO in inputsOfMaterial)
                 {
                     if (GO.GetComponent<RawMaterial>())
                     {
-                        estimatedCost += GO.GetComponent<RawMaterial>().Price;
+                        estimatedCost += GO.GetComponent<RawMaterial>().Price * inputCnt;
+                    }
+                    else
+                    {
+                        GameObject[] inputsOfMaterialOFMaterial = GO.GetComponent<MealMaterial>().Inputs;
+                        estimatedCost += CostEstimater(inputsOfMaterialOFMaterial, inputCnt);
+                    }
+                }
+            }
+            ctr++;
+        }
+        return estimatedCost;
+    }
+
+    float CostEstimater(GameObject[] inputs,float count)
+    {
+        float estimatedCost = 0;
+        int ctr = 0;
+        foreach (GameObject item in inputs)
+        {
+            if (item.GetComponent<RawMaterial>())
+            {
+                estimatedCost += item.GetComponent<RawMaterial>().Price * count;
+            }
+            else
+            {
+                GameObject[] inputsOfMaterial = item.GetComponent<MealMaterial>().Inputs;
+                float inputCnt = item.GetComponent<MealMaterial>().InputCount[ctr];
+                foreach (GameObject GO in inputsOfMaterial)
+                {
+                    if (GO.GetComponent<RawMaterial>())
+                    {
+                        estimatedCost += GO.GetComponent<RawMaterial>().Price * inputCnt * count;
                     }
                     else
                     {
                         GameObject[] inputsOfMaterialOFMaterial = GO.GetComponent<MealMaterial>().Inputs;
                         foreach (GameObject GOO in inputsOfMaterialOFMaterial)
                         {
-                            estimatedCost += GOO.GetComponent<RawMaterial>().Price;
+                            estimatedCost += CostEstimater(inputsOfMaterialOFMaterial, inputCnt);
                         }
                     }
                 }
             }
+            ctr++;
         }
         return estimatedCost;
     }
@@ -355,8 +528,9 @@ public class PastaFeatures : MonoBehaviour
         List<GameObject> locInputs = new List<GameObject>();
         int shapeInt = 0;
         int flourInt = 0;
+        int kindInt = 0;
 
-        for (int i = 0; i < _shapes.Length; i++)
+        for (int i = 0; i < _shapes.Count; i++)
         {
             if(_shapes[i] == shape)
             {
@@ -364,7 +538,7 @@ public class PastaFeatures : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < _flours.Length; i++)
+        for (int i = 0; i < _flours.Count; i++)
         {
             if (_flours[i] == flour)
             {
@@ -372,11 +546,36 @@ public class PastaFeatures : MonoBehaviour
             }
         }
 
-        string mealCode = shapeInt.ToString() + flourInt.ToString();
-        if(mealCode == "00")
+        for (int i = 0; i < _kinds.Count; i++)
         {
-            locInputs.Add(_rawInputs[0]);
-            locInputs.Add(_matInputs[1]);
+            if (_kinds[i] == kind)
+            {
+                kindInt = i;
+            }
+        }
+
+        string mealCode = shapeInt.ToString() + flourInt.ToString() + kindInt.ToString();
+        if(mealCode == "000")
+        {
+            locInputs.Add(_rawInputs[0]);//olive oil
+            locInputs.Add(_matInputs[1]);//noddle
+        }
+        else if (mealCode == "001")
+        {
+            locInputs.Add(_rawInputs[0]);//olive oil
+            locInputs.Add(_matInputs[1]);//noddle
+            //locInputs.Add(_rawInputs[4]);//tomato
+        }
+        else if (mealCode == "101")
+        {
+            locInputs.Add(_rawInputs[0]);//olive oil
+            locInputs.Add(_matInputs[2]);//spagetti
+            //locInputs.Add(_rawInputs[4]);//tomato
+        }
+        else if (mealCode == "100")
+        {
+            locInputs.Add(_rawInputs[0]);//olive oil
+            locInputs.Add(_matInputs[2]);//spagetti
         }
         foreach (GameObject item in pickedExtras)
         {
@@ -389,45 +588,121 @@ public class PastaFeatures : MonoBehaviour
         return locInputs;
     }
 
-    List<GameObject> setInputCount(List<GameObject> inputs)
-    {
-        int ctInpuy = inputs.Count;
+    /// <summary>
+    /// yemeklerin iceriklerinin neyden ne kadar olacaginin oransal olarak hesaplayip listeler.
+    /// </summary>
+    /// <param name="inputs"> icerik cesitlerini gameobject olarak tutan liste.</param>
+    /// <returns></returns>
+    List<float> setInputCount(GameObject[] inputs)
+    { 
         List<float> returnable = new List<float>();
-        for (int i = 0; i < ctInpuy; i++)
+        float total = 0;
+        foreach (var item in inputs)
         {
-            if(i == 1)
+            Debug.Log(item.name);
+            if (item.GetComponent<MealMaterial>())
             {
-
+                switch (item.GetComponent<MealMaterial>().reqForPasta)
+                {
+                    case MealMaterial.ReqForPasta.none:
+                        break;
+                    case MealMaterial.ReqForPasta.low:
+                        MealMaterial mat = item.GetComponent<MealMaterial>();
+                        float necessaryQuant = 0.25f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    case MealMaterial.ReqForPasta.mid:
+                        mat = item.GetComponent<MealMaterial>();
+                        necessaryQuant = 0.75f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    case MealMaterial.ReqForPasta.high:
+                        mat = item.GetComponent<MealMaterial>();
+                        necessaryQuant = 1.5f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    case MealMaterial.ReqForPasta.veryHigh:
+                        mat = item.GetComponent<MealMaterial>();
+                        necessaryQuant = 3f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    default:
+                        break;
+                }
             }
-            else if(i == 0)
+            else if (item.GetComponent<RawMaterial>())
             {
-
-            }
-            else
-            {
-
+                switch (item.GetComponent<RawMaterial>().req)
+                {
+                    case RawMaterial.ReqForPasta.none:
+                        
+                        break;
+                    case RawMaterial.ReqForPasta.low:
+                        RawMaterial mat = item.GetComponent<RawMaterial>();
+                        float necessaryQuant = 0.25f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    case RawMaterial.ReqForPasta.mid:
+                        mat = item.GetComponent<RawMaterial>();
+                        necessaryQuant = 0.75f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    case RawMaterial.ReqForPasta.high:
+                        mat = item.GetComponent<RawMaterial>();
+                        necessaryQuant = 1.5f * (1f + Mathf.Pow(quality, mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    case RawMaterial.ReqForPasta.veryHigh:
+                        mat = item.GetComponent<RawMaterial>();
+                        necessaryQuant = 3f * (1f + Mathf.Pow(quality,mat.qualityIndex) / 100f);
+                        total += necessaryQuant;
+                        returnable.Add(necessaryQuant);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-        return null;
+        Debug.Log("returnab;le count: " + returnable.Count);
+        for (int i = 0; i < returnable.Count; i++)
+        {
+            Debug.Log(returnable[i]);
+            returnable[i] /= total;
+        }
+        return returnable;
     }
 
     [SerializeField]GameObject producedMeal;
+
+    float[] quantatyRanger(float[] vs)
+    {
+        float quant = quantative / 100f;
+        quant = 150 + (200 * quant);
+        float[] newVs = new float[vs.Length];
+        for (int i = 0; i < vs.Length; i++)
+        {
+            newVs[i] = Mathf.Round(vs[i] * quant); 
+        }
+        return newVs;
+    }
 
     void DefineMeal(GameObject[] inputList)
     {
         producedMeal = new GameObject();
         Meal meal = producedMeal.AddComponent<Meal>();
         meal.Inputs = inputList;
-        int cter = 0;
-        meal.InputCount = new float[inputList.Length];
-        foreach (var item in inputList)
-        {
-            meal.InputCount[cter] = 1;//TODO: hacim sistemi ayarlandiktan sonra burayi duzelt quantatye gore #5.2
-            cter++;
-        }
+        meal.points = pointsDict;
+        meal.InputCount = quantatyRanger( setInputCount(inputList).ToArray());
         meal.Definition = mealDefSave;
         producedMeal.name = mealNameSave;
-        meal.unitTime = 20;
+        meal.unitTime = 50;
     }
 
     public void AddToList()
@@ -437,6 +712,7 @@ public class PastaFeatures : MonoBehaviour
         Station.stationOutputList[Station.StationType.Boiler].Add(producedMeal);
         DontDestroyOnLoad(producedMeal);
         MaterialAssignments(producedMeal.GetComponent<Meal>().Inputs);
+        Order.availableMeals.Add(producedMeal);
     }
 
     void MaterialAssignments(GameObject[] Inputs)
@@ -453,7 +729,7 @@ public class PastaFeatures : MonoBehaviour
                         thereIs = true;
                     }
                 }
-                if (!thereIs) Station.stationOutputList[item.GetComponent<MealMaterial>().stationType].Add(item);
+                if (!thereIs) if(!isInStation(item, item.GetComponent<MealMaterial>().stationType)) Station.stationOutputList[item.GetComponent<MealMaterial>().stationType].Add(item);
                 foreach (GameObject mat in item.GetComponent<MealMaterial>().Inputs)
                 {
                     if (mat.GetComponent<MealMaterial>())
@@ -462,12 +738,14 @@ public class PastaFeatures : MonoBehaviour
                     }
                     else if (mat.GetComponent<RawMaterial>())
                     {
-                        AddShopList(mat);
+                        if (!isInMarket(mat))
+                            AddShopList(mat);
                     }
                 }
             }else if (item.GetComponent<RawMaterial>())
             {
-                AddShopList(item);
+                if (!isInMarket(item))
+                    AddShopList(item);
             }
         }
     }
@@ -477,14 +755,79 @@ public class PastaFeatures : MonoBehaviour
         ShopController.items.Add(rawMaterial);
         DontDestroyOnLoad(rawMaterial);
     }
+
+    // debug mode icin gerekli sadece
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftControl) && producedMeal)
         {
+            averageTaker();
             AddToList();
             foreach (var item in GameObject.FindGameObjectsWithTag("station"))
             {
                 item.GetComponent<Station>().Outputs = Station.stationOutputList[item.GetComponent<Station>().stationType].ToArray();
+            }
+        }
+    }
+
+   bool isInMarket(GameObject GO)
+    {
+        foreach(var item in ShopController.items)
+        {
+            if (GO.name == item.name) return true;
+        }
+        return false;
+    }
+
+    bool isInStation(GameObject GO,Station.StationType stationType)
+    {
+        foreach (var item in Station.stationOutputList[stationType])
+        {
+            if (item.name == GO.name) return true;
+        }
+        return false;
+    }
+    public void AddPrice(string price)
+    {
+        producedMeal.GetComponent<Meal>().price = float.Parse(price);
+    }
+
+    string _mealCode = "000";
+    
+    [SerializeField] Sprite[] imageList;
+    void setImage()
+    {
+        if(kind && shape && flour)
+        {
+            if(pickedExtras.Count > 0)
+            {
+                int shapeInt = 0;
+                int flourInt = 0;
+                int kindInt = 0;
+
+                for (int i = 0; i < _shapes.Count; i++)
+                {
+                    if (_shapes[i] == shape)
+                    {
+                        shapeInt = i;
+                    }
+                }
+
+                for (int i = 0; i < _flours.Count; i++)
+                {
+                    if (_flours[i] == flour)
+                    {
+                        flourInt = i;
+                    }
+                }
+
+                for (int i = 0; i < _kinds.Count; i++)
+                {
+                    if (_kinds[i] == kind)
+                    {
+                        kindInt = i;
+                    }
+                }
             }
         }
     }

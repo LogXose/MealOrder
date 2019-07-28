@@ -10,11 +10,13 @@ public class BuyingPanelController : MonoBehaviour {
     public static bool atBuyingPanel = false;
     [SerializeField] GameObject itemPrefab;
     [SerializeField] GameObject content;
-    public GameObject[] openedStationList;
+    public static List<GameObject> openedStationList = new List<GameObject>();
     public static bool machineSelected = false;
-
+    public static GameObject selected;
+    public static bool buyed = false;
     void Update()
     {
+        
         if (open)
         {
             GetComponent<Animator>().SetBool("open", true);
@@ -36,7 +38,8 @@ public class BuyingPanelController : MonoBehaviour {
                 atBuyingPanel = false;
             }else if (results.Count == 0 && machineSelected)
             {
-                machineSelected = false;
+                //machineSelected = false;
+                Debug.Log("log");
             }
             else
             {
@@ -59,8 +62,16 @@ public class BuyingPanelController : MonoBehaviour {
             Station kind = item.GetComponent<Station>();
             GameObject icon = next.transform.GetChild(1).gameObject;
             GameObject name = next.transform.GetChild(2).gameObject;
+            GameObject price = next.transform.GetChild(3).gameObject;
             icon.GetComponent<Image>().sprite = kind.icon;
             name.GetComponent<Text>().text = item.name;
+            next.GetComponent<BuyingItemController>().prefab = item;
+            price.GetComponent<Text>().text = "$" + next.GetComponent<BuyingItemController>().prefab.GetComponent<Station>().price.ToString();
         }
+    }
+    public void DeselectMachine()
+    {
+        machineSelected = false;
+        selected = null;
     }
 }

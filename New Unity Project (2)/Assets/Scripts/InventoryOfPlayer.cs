@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryOfPlayer : MonoBehaviour {
-    public static float Money = 500;
+    public static float Money = 2500;
     [SerializeField] Color blue;
 
     public static int tkg = 3000;

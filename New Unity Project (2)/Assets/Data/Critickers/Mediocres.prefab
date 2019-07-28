@@ -53,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Mediocre Chefs
   deviationRange: 50
-  price: 1000
+  price: 450
   icon:
   - {fileID: 0}
   - {fileID: 0}

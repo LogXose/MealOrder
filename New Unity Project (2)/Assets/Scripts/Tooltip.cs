@@ -6,39 +6,42 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-    /// <summary>
-    /// Basic tooltip class used throughout the demo.
-    /// </summary>
-    public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+/// <summary>
+/// Basic tooltip class used throughout the demo.
+/// </summary>
+public class Tooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+{
+    public GameObject tooltip;
+
+    public float fadeTime = 0.1f;
+    public bool enable = true;
+
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        public GameObject tooltip;
-
-        public float fadeTime = 0.1f;
-
-        public virtual void OnPointerEnter(PointerEventData eventData)
+        if (!enable) return;
+        if (eventData.button != PointerEventData.InputButton.Left)
         {
-            if (eventData.button != PointerEventData.InputButton.Left)
-            {
-                return;
-            }
-
-            if (tooltip != null)
-            {
-                StartCoroutine(Utils.FadeIn(tooltip.GetComponent<CanvasGroup>(), 1.0f, fadeTime));
-            }
+            return;
         }
 
-        public virtual void OnPointerExit(PointerEventData eventData)
+        if (tooltip != null)
         {
-            if (eventData.button != PointerEventData.InputButton.Left)
-            {
-                return;
-            }
-
-            if (tooltip != null)
-            {
-                StartCoroutine(Utils.FadeOut(tooltip.GetComponent<CanvasGroup>(), 0.0f, fadeTime));
-            }
+            StartCoroutine(Utils.FadeIn(tooltip.GetComponent<CanvasGroup>(), 1.0f, fadeTime));
         }
     }
+
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+        if (!enable) return;
+        if (eventData.button != PointerEventData.InputButton.Left)
+        {
+            return;
+        }
+
+        if (tooltip != null)
+        {
+            StartCoroutine(Utils.FadeOut(tooltip.GetComponent<CanvasGroup>(), 0.0f, fadeTime));
+        }
+    }
+}
 

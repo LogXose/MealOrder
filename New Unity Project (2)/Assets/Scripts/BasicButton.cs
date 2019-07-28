@@ -18,6 +18,9 @@ public class BasicButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public float onClickAlpha;
     public bool close = false;
     [SerializeField] bool pickerItem = false;
+    public bool hasActivated = false;
+    public bool donePrecondition = false;
+    public bool techItem = false;
 
     [Serializable] 
     public class ButtonClickedEvent : UnityEvent { }
@@ -30,6 +33,11 @@ public class BasicButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private void Awake()
     {
         canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+    }
+    private void Start()
+    {
+        canvasGroup.alpha = 1f;
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData)
@@ -80,6 +88,36 @@ public class BasicButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
 
         canvasGroup.alpha = onHoverAlpha;
+    }
+    bool changeState = false;
+    void Update()
+    {
+        if (techItem)
+        {
+
+            if (!donePrecondition)
+            {
+                canvasGroup.alpha = 0.5f;
+                onHoverAlpha = 0.5f;
+                onClickAlpha = 0.5f;
+                gameObject.GetComponent<Tooltip>().enable = false;
+            }
+            else
+            {
+                if (!changeState) { canvasGroup.alpha = 1; changeState = true; }
+                gameObject.GetComponent<Tooltip>().enable = true;
+                if (hasActivated)
+                {
+                    onHoverAlpha = 1f;
+                    onClickAlpha = 1f;
+                }
+                else
+                {
+                    onHoverAlpha = 0.9f;
+                    onClickAlpha = 0.6f;
+                }
+            }
+        }
     }
 }
 

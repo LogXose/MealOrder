@@ -58,6 +58,8 @@ MonoBehaviour:
   Definition: Fundamentals of Italian Pasta Empire.
   InputCount:
   - 1
-  unitTime: 21
-  minQuant: 0
+  unitTime: 0.01
+  minQuant: 1
   countable: 0
+  qualityIndex: 0.2
+  reqForPasta: 4

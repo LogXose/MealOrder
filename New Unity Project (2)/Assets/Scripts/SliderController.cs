@@ -67,7 +67,7 @@ public class SliderController : MonoBehaviour {
             textLeft.text = "%" + (sliderLeft.value * 100).ToString("00.0");
             textRight.text = "%" + (sliderRight.value * 100).ToString("00.0");
         }
-        
+        Debug.Log("quant :" + sliderLeft.value);
     }
     void ExecuteChange(float sur,Slider one,Slider two,Slider main)
     {
@@ -109,15 +109,12 @@ public class SliderController : MonoBehaviour {
                 main.value = 1.000000f - one.value - two.value;
             }
         }
- 
     }
     public void SaveSegments()
     {
         PastaFeatures.quantative = sliderLeft.value*100;
         PastaFeatures.effort = sliderMid.value*100;
         PastaFeatures.quality = sliderRight.value*100;
-        nextPage.SetActive(true);
-        transform.parent.gameObject.SetActive(false);
     }
     
 }

@@ -23,6 +23,7 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
     [SerializeField] int yy;
     int sendQuantaty;
     GameObject represent;
+    public static List<GameObject> stations = new List<GameObject>();
 
     enum State
     {

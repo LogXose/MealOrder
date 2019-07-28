@@ -56,3 +56,5 @@ MonoBehaviour:
   image: {fileID: 21300000, guid: 78272c15cfd5fda4292403e839c8f67b, type: 3}
   countable: 1
   minQuant: 50
+  qualityIndex: 0.43
+  req: 2

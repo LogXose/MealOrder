@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SceneSaver : MonoBehaviour {
     public static Dictionary<int,creatingStation> savedStations = new Dictionary<int,creatingStation>();
@@ -9,12 +10,18 @@ public class SceneSaver : MonoBehaviour {
     bool debug = false;
     public struct creatingStation
     {
+        public Transform stationGO;
         public int index;
         public Station.InventorySlot[] inventorySlots;
         public bool crafting;
         public float leftTime;
         public int quantaty;
         public GameObject creating;
+    }
+
+    private void Update()
+    {
+        Application.targetFrameRate = 300;
     }
 
     public void saveScene()
@@ -25,9 +32,9 @@ public class SceneSaver : MonoBehaviour {
         #endregion
         foreach (var item in stations)
         {
+            Debug.Log(item.name);
             Station station = item.GetComponent<Station>();
-            creatingStation cS = new creatingStation { index = station.stationIndex, inventorySlots = station.inventory, crafting = false };
-            Debug.Log(station.Counter);
+            creatingStation cS = new creatingStation { stationGO = station.transform, index = station.stationIndex, inventorySlots = station.inventory, crafting = false };
             if(station.Counter > 0)
             {
                 Debug.Log("craftingOne");
@@ -43,9 +50,12 @@ public class SceneSaver : MonoBehaviour {
 
     private void OnLevelWasLoaded(int level)
     {
-        if(level == 2)
+        if(level == 0)
         {
+            NavMeshSurface navMeshSurface = GameObject.FindGameObjectWithTag("NavMesh").GetComponent<NavMeshSurface>();
+            navMeshSurface.BuildNavMesh();
             GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("station");
+            Debug.Log(savedStations.Count);
             if(savedStations.Count > 0)
             {
                 foreach (var item in gameObjects)

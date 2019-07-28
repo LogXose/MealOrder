@@ -53,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Top Class Chefs
   deviationRange: 10
-  price: 20000
+  price: 2000
   icon:
   - {fileID: 0}
   - {fileID: 0}

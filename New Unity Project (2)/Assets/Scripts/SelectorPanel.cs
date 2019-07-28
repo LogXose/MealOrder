@@ -18,7 +18,7 @@ public class SelectorPanel : MonoBehaviour {
         {
             Destroy(content.transform.GetChild(i).gameObject);
         }
-        GameObject[] extras = pasta._extras;
+        List<GameObject> extras = PastaFeatures._extras;
         foreach (GameObject item in extras)
         {
             GameObject next = Instantiate(prefab, content.transform);

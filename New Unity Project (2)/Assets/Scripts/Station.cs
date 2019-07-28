@@ -8,6 +8,8 @@ public class Station : MonoBehaviour {
     public static Dictionary<StationType, List<GameObject>> stationOutputList = new Dictionary<StationType, List<GameObject>>();
     public static int adjusterIndex;
     public static int sendQuantaty;
+    public static int indexCounter = 0;
+    public int price = 150;
     public Station()
     {
         if (stationOutputList.Count == 0)
@@ -62,9 +64,9 @@ public class Station : MonoBehaviour {
             }
         }
     }
-    [SerializeField] GameObject TimerGO;
-    [SerializeField] GameObject CountGO;
-    [SerializeField] GameObject ButtonGO;
+    static GameObject TimerGO;
+    static GameObject CountGO;
+    static GameObject ButtonGO;
     public GameObject craftingGO = null;
     public bool crafting = false;
     public float Counter = 0;
@@ -84,7 +86,8 @@ public class Station : MonoBehaviour {
     {
         DoughCutter,
         DoughKneader,
-        Boiler
+        Boiler,
+        Dryer
     }
     public StationType stationType;
     public Sprite icon;
@@ -97,6 +100,8 @@ public class Station : MonoBehaviour {
     {
         inventory = new InventorySlot[8] { slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8 };
     }
+
+    
 
     public static void Transaction(GameObject sended,int quantaty)
     {
@@ -172,6 +177,8 @@ public class Station : MonoBehaviour {
 
     public void Create(GameObject Output,int quantaty)
     {
+        TimerGO = GameObject.FindGameObjectWithTag("TimerGO");
+        ButtonGO = GameObject.FindGameObjectWithTag("ButtonGO");
         creatingQuantaty = quantaty;
         ieStruct paket;
         paket.Output = Output;
@@ -182,7 +189,7 @@ public class Station : MonoBehaviour {
 
     IEnumerator animateAndCreate(ieStruct Paket)
     {
-        int Count = int.Parse(CountGO.transform.GetChild(1).GetComponent<Text>().text);
+        int Count = int.Parse(GameObject.FindGameObjectWithTag("CountGO").transform.GetChild(1).GetComponent<Text>().text);
         int unitTimeTimesCount = 0;
         GameObject Output = Paket.Output;
         creatingOutput = Paket.Output;
@@ -247,6 +254,7 @@ public class Station : MonoBehaviour {
             if(PlayerController.current == gameObject)
             {
                 //TimerGO.SetActive(true);
+                TimerGO = GameObject.FindGameObjectWithTag("TimerGO");
                 int minute = Mathf.FloorToInt(Counter / 60);
                 int second = (int)Counter % 60;
                 string rest = minute.ToString("00") + ":" + second.ToString("00");
@@ -256,6 +264,10 @@ public class Station : MonoBehaviour {
             {
                 TimerGO.SetActive(false);
             }*/
+        }
+        if(Outputs.Length != stationOutputList[stationType].Count)
+        {
+            Outputs = stationOutputList[stationType].ToArray();
         }
         /*else if(PlayerController.current == gameObject)
         {
