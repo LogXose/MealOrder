@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0175eec7dc2d24fa35d80d3bb05295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 78272c15cfd5fda4292403e839c8f67b, type: 3}
+  icon: {fileID: 21300000, guid: fa195d6c958da834d9361e21475e3338, type: 3}
   nameGO: Cream
   price: 0
   inputIntregident: {fileID: 1887090505558298, guid: 6c9c023fe7734d24b8590335da082d47,

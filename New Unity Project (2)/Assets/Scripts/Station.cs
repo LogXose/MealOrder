@@ -66,8 +66,9 @@ public class Station : MonoBehaviour {
     }
     static GameObject TimerGO;
     static GameObject CountGO;
-    static GameObject ButtonGO;
+    public static GameObject ButtonGO;
     public GameObject craftingGO = null;
+    public int craftingCount = 0;
     public bool crafting = false;
     public float Counter = 0;
     public int InputCount;
@@ -206,18 +207,23 @@ public class Station : MonoBehaviour {
         GetComponent<Animator>().SetTrigger("Work");
         GetComponent<Station>().Counter = unitTimeTimesCount;
         craftingGO = Output;
-        ButtonGO.GetComponent<BasicButton>().close = true;
+        craftingCount = Count;
+        /*ButtonGO.GetComponent<BasicButton>().close = true;
         Color buttonColor = ButtonGO.GetComponent<Image>().color;
         buttonColor.a = 0.3f;
-        ButtonGO.GetComponent<Image>().color = buttonColor;
+        ButtonGO.GetComponent<Image>().color = buttonColor;*/
         yield return new WaitForSeconds(unitTimeTimesCount);
-        buttonColor.a = 1;
+        /*buttonColor.a = 1;
         ButtonGO.GetComponent<Image>().color = buttonColor;
         craftingGO = null;
-        ButtonGO.GetComponent<BasicButton>().close = false;
+        ButtonGO.GetComponent<BasicButton>().close = false;*/
         crafting = false;
         GetComponent<Animator>().SetTrigger("Stop");
         GetComponent<Station>().TransactionIE(gameObject, Output,quantaty);
+        if (Paket.Output.GetComponent<Meal>())
+        {
+            Paket.Output.GetComponent<Meal>().createdTime = Order.zaman;
+        }
     }
 
     public void Create(ieStruct paket)
@@ -232,26 +238,31 @@ public class Station : MonoBehaviour {
         GetComponent<Animator>().SetTrigger("Work");
         Counter = paket.time;
         craftingGO = paket.Output;
-        ButtonGO.GetComponent<BasicButton>().close = true;
+        craftingCount = paket.quant;
+        /*ButtonGO.GetComponent<BasicButton>().close = true;
         Color buttonColor = ButtonGO.GetComponent<Image>().color;
         buttonColor.a = 0.3f;
-        ButtonGO.GetComponent<Image>().color = buttonColor;
+        ButtonGO.GetComponent<Image>().color = buttonColor;*/
         yield return new WaitForSeconds(paket.time);
-        buttonColor.a = 1;
+        /*buttonColor.a = 1;
         ButtonGO.GetComponent<Image>().color = buttonColor;
         craftingGO = null;
-        ButtonGO.GetComponent<BasicButton>().close = false;
+        ButtonGO.GetComponent<BasicButton>().close = false;*/
         crafting = false;
         GetComponent<Animator>().SetTrigger("Stop");
         GetComponent<Station>().TransactionIE(gameObject, paket.Output, paket.quant);
+        if (paket.Output.GetComponent<Meal>())
+        {
+            paket.Output.GetComponent<Meal>().createdTime = Order.zaman;
+        }
     }
 
     private void Update()
     {
-        if(Counter > 0)
+        if (Counter > 0)
         {
             Counter -= Time.deltaTime;
-            if(PlayerController.current == gameObject)
+            if (PlayerController.current == gameObject)
             {
                 //TimerGO.SetActive(true);
                 TimerGO = GameObject.FindGameObjectWithTag("TimerGO");
@@ -265,11 +276,40 @@ public class Station : MonoBehaviour {
                 TimerGO.SetActive(false);
             }*/
         }
-        if(Outputs.Length != stationOutputList[stationType].Count)
+        if (Outputs.Length != stationOutputList[stationType].Count)
         {
             Outputs = stationOutputList[stationType].ToArray();
         }
-        /*else if(PlayerController.current == gameObject)
+        if (ButtonGO && PlayerController.current)
+        {
+            if(PlayerController.current == gameObject)
+            {
+                Debug.Log("buttonu buldu");
+                Color buttonColor = ButtonGO.GetComponent<Image>().color;
+                if (crafting)
+                {
+                    Debug.Log("carfting");
+                    Debug.Log(crafting);
+                    ButtonGO.GetComponent<BasicButton>().close = true;
+                    buttonColor.a = 0.3f;
+                    ButtonGO.GetComponent<Image>().color = buttonColor;
+                }
+                else
+                {
+                    Debug.Log("do not carfting");
+                    Debug.Log(crafting);
+                    buttonColor.a = 1;
+                    ButtonGO.GetComponent<Image>().color = buttonColor;
+                    craftingGO = null;
+                    craftingCount = 0;
+                    ButtonGO.GetComponent<BasicButton>().close = false;
+                }
+            }
+        }
+
+        
+        /*}
+        else if(PlayerController.current == gameObject)
         {
             TimerGO.SetActive(false);
         }*/
@@ -277,9 +317,10 @@ public class Station : MonoBehaviour {
     public static void Transfer()
     {
         bool execution = false;
-        InventoryOfPlayer.Transaction(PlayerController.current.GetComponent<Station>().inventory[adjusterIndex].typeOfItem,out execution, sendQuantaty);
+        InventoryOfPlayer.Transaction(PlayerController.current.GetComponent<Station>().inventory[adjusterIndex].typeOfItem, out execution, sendQuantaty);
         Debug.Log(InventoryOfPlayer.tkgCur);
-        if (execution) {
+        if (execution)
+        {
             BackTransaction(PlayerController.current.GetComponent<Station>().inventory[adjusterIndex].typeOfItem, sendQuantaty);
             Debug.Log(execution);
         }

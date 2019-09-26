@@ -227,6 +227,7 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
     {
         Station.Transfer();
         ImageCreator.updateStationCapacityText();
+        closeAdjuster();
     }
 
     void UpdateAdjuster()
@@ -291,5 +292,10 @@ public class StationSlot : MonoBehaviour,IPointerClickHandler {
             }
         }
         
+    }
+
+    public void closeAdjuster()
+    {
+        adjuster.SetActive(false);
     }
 }

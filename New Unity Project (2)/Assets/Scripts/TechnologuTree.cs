@@ -6,9 +6,12 @@ using UnityEngine.UI;
 public class TechnologuTree : MonoBehaviour {
     public static List<string> activateds = new List<string>();
     [SerializeField] GameObject BudgetGO;
-	// Use this for initialization
-	void Start () {
-		if(activateds.Count > 0)
+    public static Color activatedColor = new Color(0.439f, 0.820f, 0.439f);
+    // Use this for initialization
+    void Start () {
+
+
+        if (activateds.Count > 0)
         {
             Debug.Log(activateds.Count);
             foreach (var item in activateds)

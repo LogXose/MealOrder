@@ -6,6 +6,8 @@ using UnityEngine.AI;
 public class SceneSaver : MonoBehaviour {
     public static Dictionary<int,creatingStation> savedStations = new Dictionary<int,creatingStation>();
     public static List<creatingStation> notFinished = new List<creatingStation>();
+    public static List<GameObject> stations = new List<GameObject>();
+
 
     bool debug = false;
     public struct creatingStation
@@ -50,12 +52,11 @@ public class SceneSaver : MonoBehaviour {
 
     private void OnLevelWasLoaded(int level)
     {
-        if(level == 0)
+        if(level == 1)
         {
             NavMeshSurface navMeshSurface = GameObject.FindGameObjectWithTag("NavMesh").GetComponent<NavMeshSurface>();
             navMeshSurface.BuildNavMesh();
             GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("station");
-            Debug.Log(savedStations.Count);
             if(savedStations.Count > 0)
             {
                 foreach (var item in gameObjects)

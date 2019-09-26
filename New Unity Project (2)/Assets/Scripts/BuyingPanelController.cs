@@ -39,7 +39,6 @@ public class BuyingPanelController : MonoBehaviour {
             }else if (results.Count == 0 && machineSelected)
             {
                 //machineSelected = false;
-                Debug.Log("log");
             }
             else
             {

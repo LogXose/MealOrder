@@ -163,7 +163,6 @@ public class InventoryOfPlayer : MonoBehaviour {
                     item.count -= quantaty;
                     tkgCur -= quantaty;
                 }
-                Debug.Log("type :" + item.typeOfItem + "count" + item.count);
                 executed = true;
                 return;
             }

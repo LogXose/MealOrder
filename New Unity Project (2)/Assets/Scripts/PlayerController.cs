@@ -21,8 +21,11 @@ public class PlayerController : MonoBehaviour
     public GameObject marketInventory;
     public bool marketInventoryOpen = false;
     public GameObject Recipe;
-    [SerializeField] public Region region;
-    public static Region _Region;
+    public static string _Region = "";
+    public static string RestaurantLogo = "";
+    public static string RestaurantName = "";
+    [SerializeField] GameObject[] logos;
+    [SerializeField] Region[] regions;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -30,9 +33,26 @@ public class PlayerController : MonoBehaviour
         inventory.SetActive(false);
         marketInventory.SetActive(false);
         PlayerSlot.playerInventory = charInventory;
-        if(!_Region)
-        _Region = region;
     }
+
+    public Region getRegion()
+    {
+        foreach (var item in regions)
+        {
+            if (_Region == item.name) return item;
+        }
+        return regions[0];
+    }
+
+    public GameObject getLogo()
+    {
+        foreach (var item in logos)
+        {
+            if (RestaurantLogo == item.name) return item;
+        }
+        return logos[0];
+    }
+
     float ctrD = 0;
     float sumD = 0;
     void Update()
@@ -94,30 +114,38 @@ public class PlayerController : MonoBehaviour
                         }
                         else if (hit.transform.parent != null)
                         {
-                            if (hit.transform.parent.CompareTag("station")) 
-                            if (Vector3.Magnitude(hit.point - transform.position) < 10)
-                            {
-                                inventoryOpen = true;
-                                inventory.SetActive(true);
-                                //inventory.transform.position = Input.mousePosition;
-                                current = hit.transform.parent.gameObject;
-                                RecipeController.recipes = hit.transform.parent.GetComponent<Station>().Outputs;
-                                foreach (GameObject item in hit.transform.parent.GetComponent<Station>().Outputs)
+                            if (hit.transform.parent.CompareTag("station"))
+                                if (Vector3.Magnitude(hit.point - transform.position) < 10)
                                 {
-                                    GameObject recipe = Instantiate(Recipe, RecipeBook.transform);
-                                    Image image = recipe.transform.GetChild(2).GetComponent<Image>();
-                                    Text text = recipe.transform.GetChild(0).GetComponent<Text>();
-                                    text.text = item.name;
-                                    if (item.GetComponent<MealMaterial>())
+                                    inventoryOpen = true;
+                                    inventory.SetActive(true);
+                                    //inventory.transform.position = Input.mousePosition;
+                                    current = hit.transform.parent.gameObject;
+                                    RecipeController.recipes = hit.transform.parent.GetComponent<Station>().Outputs;
+                                    foreach (GameObject item in hit.transform.parent.GetComponent<Station>().Outputs)
                                     {
-                                        image.sprite = item.GetComponent<MealMaterial>().image;
+                                        GameObject recipe = Instantiate(Recipe, RecipeBook.transform);
+                                        Image image = recipe.transform.GetChild(2).GetComponent<Image>();
+                                        Text text = recipe.transform.GetChild(0).GetComponent<Text>();
+                                        text.text = item.name;
+                                        if (item.GetComponent<MealMaterial>())
+                                        {
+                                            image.sprite = item.GetComponent<MealMaterial>().image;
+                                        }
+                                        else if (item.GetComponent<Meal>())
+                                        {
+                                            image.sprite = item.GetComponent<Meal>().image;
+                                        }
                                     }
-                                    else if (item.GetComponent<Meal>())
-                                    {
-                                        image.sprite = item.GetComponent<Meal>().image;
-                                    }
+                                    GameObject.FindObjectOfType<RecipeController>().GetToggles();
                                 }
-                                GameObject.FindObjectOfType<RecipeController>().GetToggles();
+                            if (hit.transform.parent.CompareTag("delivery"))
+                            {
+                                if (Vector3.Magnitude(hit.point - transform.position) < 30)
+                                {
+                                    OrdersMenuController.open = true;
+                                    OrdersMenuController.atOrderStation = true;
+                                }
                             }
                         }
                         else if (hit.transform.CompareTag("market"))
@@ -138,6 +166,7 @@ public class PlayerController : MonoBehaviour
                             {
                                 OrdersMenuController.open = true;
                                 OrdersMenuController.atOrderStation = true;
+                                current = hit.transform.gameObject;
                             }
                         }
                         agent.SetDestination(hit.point);
@@ -162,7 +191,10 @@ public class PlayerController : MonoBehaviour
                 ped3.position = Input.mousePosition;
                 List<RaycastResult> results3 = new List<RaycastResult>();
                 gr3.Raycast(ped3, results3);
-               // Debug.Log(results3.Count);
+                // Debug.Log(results3.Count);
+                foreach (var item in results)
+                {
+                }
                 if (results.Count > 0)
                 {
 
@@ -177,26 +209,38 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    if (inventoryOpen)
+                    if (kralinYarra)
                     {
-                        ImageCreator.Closure();
+                        kralinYarra = false;
                     }
-                    RecipeBook.GetComponent<RecipeController>().clean();
-                    inventoryOpen = false;
-                    marketInventoryOpen = false;
-                    inventory.SetActive(false);
-                    marketInventory.SetActive(false);
-                    PlayerController.current = null;
-                    foreach (GameObject item in PlayerSlot.adjusters)
+                    else
                     {
-                        if (item)
+                        Debug.Log("buraya girdi");
+                        if (GameObject.FindGameObjectWithTag("stationAdjuster")) GameObject.FindGameObjectWithTag("stationAdjuster").SetActive(false);
+                        if (inventoryOpen)
                         {
-                            item.SetActive(false);
+                            ImageCreator.Closure();
+                        }
+                        RecipeBook.GetComponent<RecipeController>().clean();
+                        inventoryOpen = false;
+                        marketInventoryOpen = false;
+                        inventory.SetActive(false);
+                        marketInventory.SetActive(false);
+                        PlayerController.current = null;
+                        foreach (GameObject item in PlayerSlot.adjusters)
+                        {
+                            if (item)
+                            {
+                                item.SetActive(false);
+                            }
                         }
                     }
+                    
+                    
                     /*OrdersMenuController.open = false;
                     OrdersMenuController.atStation = false;*/
                 }
+                
             }
         }
 
@@ -210,5 +254,5 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat("Speed_f", 0);
         }   
     }
-
+    public static bool kralinYarra = false;
 }

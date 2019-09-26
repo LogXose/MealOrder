@@ -202,6 +202,9 @@ MonoBehaviour:
   onClickAlpha: 0.7
   close: 0
   pickerItem: 0
+  hasActivated: 0
+  donePrecondition: 0
+  techItem: 0
   onClicked:
     m_PersistentCalls:
       m_Calls: []
@@ -289,6 +292,9 @@ MonoBehaviour:
   onClickAlpha: 0.6
   close: 0
   pickerItem: 0
+  hasActivated: 0
+  donePrecondition: 0
+  techItem: 0
   onClicked:
     m_PersistentCalls:
       m_Calls:
@@ -321,6 +327,9 @@ MonoBehaviour:
   onClickAlpha: 0.7
   close: 0
   pickerItem: 0
+  hasActivated: 0
+  donePrecondition: 0
+  techItem: 0
   onClicked:
     m_PersistentCalls:
       m_Calls: []
@@ -486,7 +495,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 5c8fe168e121d414abf3a7a2131b473a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -54,11 +54,11 @@ MonoBehaviour:
   Inputs:
   - {fileID: 1513643575099154, guid: 1ace4f763404df044940547ba7bf4586, type: 2}
   stationType: 3
-  image: {fileID: 21300000, guid: 8c8323ecf826a974bb8508707febc94c, type: 3}
+  image: {fileID: 21300000, guid: f0c04f6c257c43142aa7e38afc3325e2, type: 3}
   Definition: Fundamentals of Italian Pasta Empire.
   InputCount:
   - 1
-  unitTime: 0.01
+  unitTime: 0.03
   minQuant: 1
   countable: 0
   qualityIndex: 0.2

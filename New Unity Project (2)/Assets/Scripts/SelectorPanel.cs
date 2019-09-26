@@ -48,6 +48,7 @@ public class SelectorPanel : MonoBehaviour {
         }
         mainText.GetComponent<Text>().text = newText;
         pasta.pickedExtras = extras;
+        FindObjectOfType<PastaFeatures>().setImage();
         gameObject.SetActive(false);
     }
 }

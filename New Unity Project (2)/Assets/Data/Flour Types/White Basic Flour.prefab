@@ -53,11 +53,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Inputs: []
-  Station: []
-  image: {fileID: 0}
+  stationType: 0
+  image: {fileID: 21300000, guid: 4b413ab24f03e35478a5bf372a00abc6, type: 3}
   Definition: 
-  InputCount: 
+  InputCount: []
   unitTime: 0
+  minQuant: 1
+  countable: 0
+  qualityIndex: 0
+  reqForPasta: 1
 --- !u!114 &114313951534797610
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -71,4 +75,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectRate: 0a00000003000000f4ffffff00000000ecffffff
   nameGO: White Basic Flour
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4b413ab24f03e35478a5bf372a00abc6, type: 3}

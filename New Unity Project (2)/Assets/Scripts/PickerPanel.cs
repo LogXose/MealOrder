@@ -15,6 +15,7 @@ public class PickerPanel : MonoBehaviour {
     [SerializeField]GameObject content;
     [SerializeField]GameObject prefab;
     PastaFeatures pastaFeatures;
+    [SerializeField] GameObject[] _logoList;
 
     private void Awake()
     {
@@ -53,18 +54,6 @@ public class PickerPanel : MonoBehaviour {
             }
         }
         else if (name == "flour")
-        {
-            foreach (GameObject item in PastaFeatures._flours)
-            {
-                GameObject next = Instantiate(prefab, content.transform);
-                GameObject image = next.transform.GetChild(0).gameObject;
-                GameObject text = next.transform.GetChild(1).gameObject;
-                Instantiate(item, next.transform);
-                image.GetComponent<Image>().sprite = item.GetComponent<FlourType>().icon;
-                text.GetComponent<Text>().text = item.name;
-                pickerType = PickerType.Flour;
-            }
-        }else if(name == "logo")
         {
             foreach (GameObject item in PastaFeatures._flours)
             {
@@ -122,5 +111,6 @@ public class PickerPanel : MonoBehaviour {
             default:
                 break;
         }
+        FindObjectOfType<PastaFeatures>().setImage();
     }
 }

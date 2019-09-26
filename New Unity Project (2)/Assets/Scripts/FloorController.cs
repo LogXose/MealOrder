@@ -14,6 +14,7 @@ public class FloorController : MonoBehaviour
     [SerializeField] GameObject confirmationGO;
     bool onConfirm = false;
     [SerializeField] GameObject instructions;
+
     private void Update()
     {
         if (BuyingPanelController.machineSelected)
@@ -30,9 +31,11 @@ public class FloorController : MonoBehaviour
                     {
                         Debug.Log("notHasStation");
                         _block = item.transform.gameObject;
-                        if (!station)station = Instantiate(BuyingPanelController.selected);
+                        if (!station) { Tutorial.TutorialRequest = false; station = Instantiate(BuyingPanelController.selected); }
                         else if (station.GetComponent<Station>().stationType != BuyingPanelController.selected.GetComponent<Station>().stationType)
+                        {
                             station = Instantiate(BuyingPanelController.selected);
+                        }
                         station.transform.parent = _block.transform;
                         station.transform.localPosition = new Vector3(0, 0, 5.13f);
                         item.transform.GetComponent<Floor>().onIt = true;
@@ -102,6 +105,7 @@ public class FloorController : MonoBehaviour
     }
     public void Confirm()
     {
+        Tutorial.TutorialRequest = true;
         station.transform.parent = null;
         BuyingPanelController.machineSelected = false;
         floor.onStation = true;  // item.transform.GetComponent<Floor>() => floor
@@ -115,7 +119,6 @@ public class FloorController : MonoBehaviour
         confirmationGO.SetActive(false);
         onConfirm = false;
         getIt = false;
-
     }
 
     void ConfirmationBalloon()

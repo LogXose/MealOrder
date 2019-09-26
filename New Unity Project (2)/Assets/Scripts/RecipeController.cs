@@ -63,7 +63,7 @@ public class RecipeController : MonoBehaviour {
         {
             Toggle item = toggles[i];
             item.enabled = true;
-            if (item.isOn && !crafting)
+            if (item.isOn && !crafting && toggled)
             {
                 if (item != toggled)
                 {

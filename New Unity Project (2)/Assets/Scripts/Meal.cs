@@ -10,7 +10,7 @@ public class Meal : MonoBehaviour {
     public float[] InputCount;
     public float unitTime = 0;
     public float price = 99.65f;
-    public int minQuant = 0;
+    public int minQuant = 1;
     public float realAveragePoint = 0;
     public Dictionary<Segmentation.CustomerSegmentation, float> points;
     public float createdTime;

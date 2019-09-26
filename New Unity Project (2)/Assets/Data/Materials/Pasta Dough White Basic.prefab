@@ -60,7 +60,7 @@ MonoBehaviour:
   InputCount:
   - 0.1
   - 0.9
-  unitTime: 0.1
+  unitTime: 0.05
   minQuant: 1
   countable: 0
   qualityIndex: 0

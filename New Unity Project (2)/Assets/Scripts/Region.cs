@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Region : MonoBehaviour {
     public float family;
@@ -9,6 +10,9 @@ public class Region : MonoBehaviour {
     public float student;
     public float richies;
     public List<float> vs = new List<float>();
+    public Color oldColor;
+    public Color activeColor;
+    public bool active = false;
     public Region()
     {
         vs.Add(family);
@@ -17,6 +21,7 @@ public class Region : MonoBehaviour {
         vs.Add(student);
         vs.Add(richies);
     }
+
     public Segmentation.CustomerSegmentation segmentation(float chanceNumber)
     {
         float total = family;
@@ -42,4 +47,22 @@ public class Region : MonoBehaviour {
         return Segmentation.CustomerSegmentation.richies;
     }
 
+    public void changeColor()
+    {
+        PlayerController._Region = name;
+        GetComponent<Image>().color = activeColor;
+        active = true;
+        for (int i = 1; i < transform.parent.childCount; i++)
+        {
+            if (transform.parent.GetChild(i) != transform)
+            {
+                transform.parent.GetChild(i).GetComponent<Image>().color = transform.parent.GetChild(i).GetComponent<Region>().oldColor;
+                transform.parent.GetChild(i).GetComponent<Region>().active = false;
+            }
+        }
+    }
+
+    public void SaveFromDestroy()
+    {
+    }
 }

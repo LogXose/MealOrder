@@ -24,10 +24,10 @@ public class PastaFeatures : MonoBehaviour
     public GameObject[] _outputs;
     public GameObject[] _rawInputs;
     public GameObject[] _matInputs;
-    [SerializeField] Text mealName;
+    public Text mealName;
     string mealNameSave;
     string mealDefSave;
-    [SerializeField] Text mealDefinition;
+    public Text mealDefinition;
     [SerializeField] GameObject page2;
     [SerializeField] GameObject page1;
     [SerializeField] GameObject page7;
@@ -78,27 +78,44 @@ public class PastaFeatures : MonoBehaviour
     public static Dictionary<Station.StationType, int> StationTimeReducer = new Dictionary<Station.StationType, int>()
     { {Station.StationType.Boiler ,0},{Station.StationType.DoughCutter ,0},{Station.StationType.DoughKneader ,0} };
 
-    Dictionary<Segmentation.CustomerSegmentation, float> pointsDict = new Dictionary<Segmentation.CustomerSegmentation, float>();
+    public Dictionary<Segmentation.CustomerSegmentation, float> pointsDict = new Dictionary<Segmentation.CustomerSegmentation, float>();
+    [SerializeField] GameObject popup;
     public void DefinitionPageCheck()
     {
         if(!kind)
         {
             Debug.Log("kind");
-        }else if(shape == null)
+            popup.SetActive(true);
+            popup.transform.GetChild(4).GetComponent<Text>().text = "Kind is not selected!";
+            return;
+        }
+        else if(shape == null)
         {
             Debug.Log("shape");
+            popup.SetActive(true);
+            popup.transform.GetChild(4).GetComponent<Text>().text = "Shape is not selected!";
+            return;
         }
         else if(flour == null)
         {
             Debug.Log("flour");
+            popup.SetActive(true);
+            popup.transform.GetChild(4).GetComponent<Text>().text = "flour is not selected!";
+            return;
         }
         else if(mealName.text == "")
         {
             Debug.Log("name");
+            popup.SetActive(true);
+            popup.transform.GetChild(4).GetComponent<Text>().text = "Name is not typed!";
+            return;
         }
         else if(mealDefinition.text == "")
         {
             Debug.Log("definiton");
+            popup.SetActive(true);
+            popup.transform.GetChild(4).GetComponent<Text>().text = "Definition is not typed!";
+            return;
         }
         else
         {
@@ -154,47 +171,47 @@ public class PastaFeatures : MonoBehaviour
         effort += effortBoost;
         foreach (int[] item in list)
         {
-            float xSweet = Mathf.Abs(sweet - item[0]) / 50;
+            /*float xSweet = Mathf.Abs(sweet - item[0]) / 50;
             float sweetBooster = (100 - sweetBoost) / 100;
             xSweet *= sweetBooster;
-            float ySweet = Mathf.Exp(2 * Mathf.Log(xSweet)) * 25;
+            float ySweet = Mathf.Exp(2 * Mathf.Log10(xSweet)) * 25;
             float xSour = Mathf.Abs(sour - item[1]) / 50;
             xSour *= (100 - sourBoost) / 100;
-            float ySour = Mathf.Exp(2 * Mathf.Log(xSour)) * 25;
+            float ySour = Mathf.Exp(2 * Mathf.Log10(xSour)) * 25;
             float xBitter = Mathf.Abs(bitter - item[2]) / 50;
             xBitter *= (100 - bitterBoost) / 100;
-            float yBitter = Mathf.Exp(2 * Mathf.Log(xBitter)) * 25;
+            float yBitter = Mathf.Exp(2 * Mathf.Log10(xBitter)) * 25;
             float xSalty = Mathf.Abs(salty - item[3]) / 50;
             xSalty *= (100 - saltyBoost) / 100;
-            float ySalty = Mathf.Exp(2 * Mathf.Log(xSalty)) * 25;
+            float ySalty = Mathf.Exp(2 * Mathf.Log10(xSalty)) * 25;
             float alfaProfile = 100 - (yBitter + ySalty + ySour + ySweet) / 4;
 
             float xJuicy = Mathf.Abs(juicy - item[4]) / 50;
             xJuicy *= (100 - juicyBoost) / 100;
-            float yJuicy = Mathf.Exp(2 * Mathf.Log(xJuicy)) * 25;
+            float yJuicy = Mathf.Exp(2 * Mathf.Log10(xJuicy)) * 25;
             float xCrunchy = Mathf.Abs(sour - item[5]) / 50;
             xCrunchy *= (100 - crunchyBoost) / 100;
-            float yCrunchy = Mathf.Exp(2 * Mathf.Log(xCrunchy)) * 25;
+            float yCrunchy = Mathf.Exp(2 * Mathf.Log10(xCrunchy)) * 25;
             float xSmooth = Mathf.Abs(smooth - item[6]) / 50;
             xSmooth *= (100 - smoothBoost) / 100;
-            float ySmooth = Mathf.Exp(2 * Mathf.Log(xSmooth)) * 25;
+            float ySmooth = Mathf.Exp(2 * Mathf.Log10(xSmooth)) * 25;
             float xSticky = Mathf.Abs(sticky - item[7]) / 50;
             xSticky *= (100 - stickyBoost) / 100;
-            float ySticky = Mathf.Exp(2 * Mathf.Log(xSticky)) * 25;
+            float ySticky = Mathf.Exp(2 * Mathf.Log10(xSticky)) * 25;
             float alfaTexture = 100 - (yJuicy + yCrunchy + ySmooth + ySticky) / 4;
 
             float xQuantative = (quantative - item[8]) / 50;
             float yQuantative = 0;
             if (xQuantative >= 0) { yQuantative = -1 * SegmentSpecsFactor * xQuantative; }
-            else { yQuantative = Mathf.Exp(2 * Mathf.Log(-1 * xQuantative)) * 25; }
+            else { yQuantative = Mathf.Exp(2 * Mathf.Log10(-1 * xQuantative)) * 25; }
             float xEffort = (effort - item[9]) / 50;
             float yEffort = 0;
             if (xEffort >= 0) { yEffort = -1 * SegmentSpecsFactor * xEffort; }
-            else { yEffort = Mathf.Exp(2 * Mathf.Log(-1 * xEffort)) * 25; }
+            else { yEffort = Mathf.Exp(2 * Mathf.Log10(-1 * xEffort)) * 25; }
             float xQuality = (quality - item[10]) / 50;
             float yQuality = 0;
             if (xQuality >= 0) { yQuality = -1 * SegmentSpecsFactor * xQuality; }
-            else { yQuality = Mathf.Exp(2 * Mathf.Log(-1 * xQuality)) * 25; }
+            else { yQuality = Mathf.Exp(2 * Mathf.Log10(-1 * xQuality)) * 25; }
             float alfaSegment = 100 - (yQuality + yQuantative + yEffort) / 3;
             if (alfaSegment > 100) { alfaSegment = 100; }
             else if (alfaSegment < 0) { alfaSegment = 0; }
@@ -209,7 +226,74 @@ public class PastaFeatures : MonoBehaviour
             }
             float flourFactor = flour.GetComponent<FlourType>().effectRate[counter] / 100.0f + 1;
             float boostFactor = boostListForSegments[counter] / 100.0f + 1;
-            listOfReels[counter] = (alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
+            Debug.Log(boostFactor);*/
+            float sweetBooster = (100 - sweetBoost) / 100;
+            float sourBooster = (100 - sourBoost) / 100;
+            float saltyBooster = (100 - saltyBoost) / 100;
+            float bitterBooster = (100 - bitterBoost) / 100;
+            float totalDifProfile = Mathf.Abs(sweet - item[0]) * sweetBooster
+                + Mathf.Abs(sour - item[1]) * sourBooster + Mathf.Abs(bitter - item[2]) * bitterBooster + Mathf.Abs(salty - item[3]) * saltyBooster;
+            float profilePoint = 2 - Mathf.Log10(totalDifProfile/2);
+            Debug.Log("profilePoint:" + profilePoint);
+            Debug.Log("sweet" + sweet);
+            Debug.Log("sour" + sour);
+            Debug.Log("salty" + salty);
+            Debug.Log("bitter" + bitter);
+            Debug.Log("totalDifProfile" + totalDifProfile);
+
+            float juicyBooster = (100 - juicyBoost) / 100;
+            float crunchyBooster = (100 - crunchyBoost) / 100;
+            float smoothBooster = (100 - smoothBoost) / 100;
+            float stickyBooster = (100 - stickyBoost) / 100;
+            float totalDifTexture = Mathf.Abs(juicy - item[4]) * juicyBooster + Mathf.Abs(crunchs - item[5]) * crunchyBooster +
+                Mathf.Abs(smooth - item[6]) * smoothBooster + Mathf.Abs(sticky - item[7]) * stickyBooster;
+            float texturePoint = 2 - Mathf.Log10(totalDifTexture/2);
+            Debug.Log("texturePoint:" + texturePoint);
+            Debug.Log("juicy" + juicy);
+            Debug.Log("crunchy" + crunchs);
+            Debug.Log("smooth" + smooth);
+            Debug.Log("sticky" + sticky);
+            Debug.Log("totalDifTexutre" + totalDifTexture);
+
+
+            float quantativeBooster = (quantativeBoost / 100) + 1;
+            float effortBooster = (effortBoost / 100) + 1;
+            float qualtyBooster = (quantativeBoost / 100) + 1;
+            float quantResult = quantative - item[8] >= 0 ? 0.5f + 0.17f * ((quantative - item[8]) / (100 - item[8])) : 0.5f * (quantative - item[8]);
+            float effortResult = effort - item[9] >= 0 ? 0.5f + 0.17f * ((effort - item[9]) / (100 - item[9])) : 0.5f * (effort - item[9]);
+            float qualityResult = quality - item[10] >= 0 ? 0.5f + 0.17f * ((quality - item[10]) / (100 - item[10])) : 0.5f * (quality - item[10]);
+            quantResult = quantResult * quantativeBooster <= 0.67f ? quantResult * quantativeBooster : 0.67f;
+            effortResult = effortResult * effortBooster <= 0.67f ? effortResult * effortBooster : 0.67f;
+            qualityResult = qualityResult * qualtyBooster <= 0.67f ? qualityResult * qualtyBooster : 0.67f;
+            float segmentPoint = quantResult + effortResult + qualityResult;
+            Debug.Log("segment point: " + segmentPoint);
+            Debug.Log("quantative" + quantative);
+            Debug.Log("effort" + effort);
+            Debug.Log("quality" + quality);
+            Debug.Log("qualityResult" + qualityResult);
+
+            float netpoint = (profilePoint + texturePoint + segmentPoint) / 6.1f;
+            netpoint *= 10;
+            Debug.Log("netPoint:" + netpoint);
+
+            float shapeFactor = 1;
+            for (int i = 0; i < shape.GetComponent<Shape>().affectedKinds.Length; i++)
+            {
+                if (shape.GetComponent<Shape>().affectedKinds[i] == kind)
+                {
+                    shapeFactor = shape.GetComponent<Shape>().effectRate[i] / 100.0f + 1;
+                }
+            }
+            float flourFactor = flour.GetComponent<FlourType>().effectRate[counter] / 100.0f + 1;
+            float boostFactor = boostListForSegments[counter] / 100.0f + 1;
+            float factorFactor = (shapeFactor + flourFactor + boostFactor) / 3;
+
+            float finalPoint = netpoint * factorFactor;
+            if (finalPoint >= 10f) finalPoint = 10; else if (finalPoint <= 0f) finalPoint = 0;
+            listOfReels[counter] = finalPoint;
+
+            //listOfReels[counter] = (alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
+            Debug.Log(listOfReels[counter]);
             pointsDict.Add(enumList[counter], listOfReels[counter]);
             counter++;
         }
@@ -270,50 +354,82 @@ public class PastaFeatures : MonoBehaviour
         effort += effortBoost;
         foreach (int[] item in list)
         {
-            float xSweet = Mathf.Abs(sweet - item[0]) / 50;
+            /*float xSweet = Mathf.Abs(sweet - item[0]) / 50;
             float sweetBooster = (100 - sweetBoost) / 100;
             xSweet *= sweetBooster;
-            float ySweet = Mathf.Exp(2 * Mathf.Log(xSweet)) * 25;
+            float ySweet = Mathf.Exp(2 * Mathf.Log10(xSweet)) * 25;
+            Debug.Log("xsweet:" + xSweet);
+            Debug.Log("booster " + sweetBooster);
+            Debug.Log("ysweet" + ySweet);
             float xSour = Mathf.Abs(sour - item[1]) / 50;
             xSour *= (100 - sourBoost) / 100;
-            float ySour = Mathf.Exp(2 * Mathf.Log(xSour)) * 25;
+            float ySour = Mathf.Exp(2 * Mathf.Log10(xSour)) * 25;
             float xBitter = Mathf.Abs(bitter - item[2]) / 50;
             xBitter *= (100 - bitterBoost) / 100;
-            float yBitter = Mathf.Exp(2 * Mathf.Log(xBitter)) * 25;
+            float yBitter = Mathf.Exp(2 * Mathf.Log10(xBitter)) * 25;
             float xSalty = Mathf.Abs(salty - item[3]) / 50;
             xSalty *= (100 - saltyBoost) / 100;
-            float ySalty = Mathf.Exp(2 * Mathf.Log(xSalty)) * 25;
+            float ySalty = Mathf.Exp(2 * Mathf.Log10(xSalty)) * 25;
             float alfaProfile = 100 - (yBitter + ySalty + ySour + ySweet) / 4;
 
             float xJuicy = Mathf.Abs(juicy - item[4]) / 50;
             xJuicy *= (100 - juicyBoost) / 100;
-            float yJuicy = Mathf.Exp(2 * Mathf.Log(xJuicy)) * 25;
+            float yJuicy = Mathf.Exp(2 * Mathf.Log10(xJuicy)) * 25;
             float xCrunchy = Mathf.Abs(sour - item[5]) / 50;
             xCrunchy *= (100 - crunchyBoost) / 100;
-            float yCrunchy = Mathf.Exp(2 * Mathf.Log(xCrunchy)) * 25;
+            float yCrunchy = Mathf.Exp(2 * Mathf.Log10(xCrunchy)) * 25;
             float xSmooth = Mathf.Abs(smooth - item[6]) / 50;
             xSmooth *= (100 - smoothBoost) / 100;
-            float ySmooth = Mathf.Exp(2 * Mathf.Log(xSmooth)) * 25;
+            float ySmooth = Mathf.Exp(2 * Mathf.Log10(xSmooth)) * 25;
             float xSticky = Mathf.Abs(sticky - item[7]) / 50;
             xSticky *= (100 - stickyBoost) / 100;
-            float ySticky = Mathf.Exp(2 * Mathf.Log(xSticky)) * 25;
+            float ySticky = Mathf.Exp(2 * Mathf.Log10(xSticky)) * 25;
             float alfaTexture = 100 - (yJuicy + yCrunchy + ySmooth + ySticky) / 4;
 
             float xQuantative = (quantative - item[8]) / 50;
             float yQuantative = 0;
             if (xQuantative >= 0) { yQuantative = -1 * SegmentSpecsFactor * xQuantative; }
-            else { yQuantative = Mathf.Exp(2 * Mathf.Log(-1 * xQuantative)) * 25; }
+            else { yQuantative = Mathf.Exp(2 * Mathf.Log10(-1 * xQuantative)) * 25; }
             float xEffort = (effort - item[9]) / 50;
             float yEffort = 0;
             if (xEffort >= 0) { yEffort = -1 * SegmentSpecsFactor * xEffort; }
-            else { yEffort = Mathf.Exp(2 * Mathf.Log(-1 * xEffort)) * 25; }
+            else { yEffort = Mathf.Exp(2 * Mathf.Log10(-1 * xEffort)) * 25; }
             float xQuality = (quality - item[10]) / 50;
             float yQuality = 0;
             if (xQuality >= 0) { yQuality = -1 * SegmentSpecsFactor * xQuality; }
-            else { yQuality = Mathf.Exp(2 * Mathf.Log(-1 * xQuality)) * 25; }
+            else { yQuality = Mathf.Exp(2 * Mathf.Log10(-1 * xQuality)) * 25; }
             float alfaSegment = 100 - (yQuality + yQuantative + yEffort) / 3;
             if (alfaSegment > 100) { alfaSegment = 100; }
-            else if (alfaSegment < 0) { alfaSegment = 0; }
+            else if (alfaSegment < 0) { alfaSegment = 0; }*/
+            float sweetBooster = (100 - sweetBoost) / 100;
+            float sourBooster = (100 - sourBoost) / 100;
+            float saltyBooster = (100 - saltyBoost) / 100;
+            float bitterBooster = (100 - bitterBoost) / 100;
+            float totalDifProfile = Mathf.Abs(sweet - item[0])*sweetBooster
+                + Mathf.Abs(sour - item[1])*sourBooster + Mathf.Abs(bitter - item[2])* bitterBooster + Mathf.Abs(salty - item[3])*saltyBooster;
+            float profilePoint = 2 - Mathf.Log10(totalDifProfile);
+
+            float juicyBooster = (100 - juicyBoost) / 100;
+            float crunchyBooster = (100 - crunchyBoost) / 100;
+            float smoothBooster = (100 - smoothBoost) / 100;
+            float stickyBooster = (100 - stickyBoost) / 100;
+            float totalDifTexture = Mathf.Abs(juicy - item[4]) * juicyBooster + Mathf.Abs(crunchs - item[5]) * crunchyBooster +
+                Mathf.Abs(smooth - item[6]) * smoothBooster + Mathf.Abs(sticky - item[7]) * stickyBooster;
+            float texturePoint = 2 - Mathf.Log10(totalDifTexture);
+
+            float quantativeBooster = (quantativeBoost / 100) + 1;
+            float effortBooster = (effortBoost / 100)+1;
+            float qualtyBooster = (quantativeBoost / 100)+1;
+            float quantResult = quantative - item[8] >= 0? 0.5f + 0.17f * ((quantative - item[8])/(100 - item[8])): 0.5f * (quantative - item[8]);
+            float effortResult = effort - item[9] >= 0 ? 0.5f + 0.17f * ((effort - item[9]) / (100 - item[9])) : 0.5f * (effort - item[9]);
+            float qualityResult = quality - item[10] >= 0 ? 0.5f + 0.17f * ((quality - item[10]) / (100 - item[10])) : 0.5f * (quality - item[10]);
+            quantResult = quantResult * quantativeBooster <= 0.67f ? quantResult * quantativeBooster : 0.67f;
+            effortResult = effortResult * effortBooster <= 0.67f ? effortResult * effortBooster : 0.67f;
+            qualityResult = qualityResult * qualtyBooster <= 0.67f ? quality * qualtyBooster : 0.67f;
+            float segmentPoint = quantResult + effortResult + qualityResult;
+
+            float netpoint = (profilePoint + texturePoint + segmentPoint) / 6.1f;
+            netpoint *= 10;
 
             float shapeFactor = 1;
             for (int i = 0; i < shape.GetComponent<Shape>().affectedKinds.Length; i++)
@@ -325,7 +441,12 @@ public class PastaFeatures : MonoBehaviour
             }
             float flourFactor = flour.GetComponent<FlourType>().effectRate[counter] / 100.0f + 1;
             float boostFactor = boostListForSegments[counter] / 100.0f + 1;
-            listOfReels[counter] = (alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
+            float factorFactor = (shapeFactor + flourFactor + boostFactor) / 3;
+
+            float finalPoint = netpoint * factorFactor;
+            if (finalPoint >= 10f) finalPoint = 10; else if (finalPoint <= 0f) finalPoint = 0;
+            listOfReels[counter] = finalPoint;             //(alfaProfile + alfaTexture) * alfaSegment * boostFactor * shapeFactor * flourFactor / 2000;
+            Debug.Log(listOfReels[counter]);
             pointsDict.Add(enumList[counter], listOfReels[counter]);
             counter++;
         }
@@ -367,6 +488,7 @@ public class PastaFeatures : MonoBehaviour
             avatar.sprite = critiker.GetComponent<Criticker>().icon[i];
         }*/
         floatList = listOfReels;
+        ProfilePage();
     }
     List<float> floatList;
     void averageTaker()
@@ -408,8 +530,8 @@ public class PastaFeatures : MonoBehaviour
         ExtrasClosed = ExtrasClosedLoc;
     }*/
 
-    
 
+    [SerializeField] GameObject profileIcon;
     public void ProfilePage()
     {
         page7.SetActive(true);
@@ -423,6 +545,8 @@ public class PastaFeatures : MonoBehaviour
         page7.transform.GetChild(8).GetComponent<Text>().text = estimatedCost.ToString(".00")+"$";
         int counter = 0;
         Transform parent_ = page7.transform.GetChild(9).GetChild(1);
+        profileIcon.GetComponent<Image>().sprite = mealImage;
+        profileIcon.GetComponent<Image>().color = Color.white;
         foreach (GameObject item in inputs)
         {
             GameObject slot = parent_.GetChild(counter).gameObject;
@@ -673,13 +797,12 @@ public class PastaFeatures : MonoBehaviour
         Debug.Log("returnab;le count: " + returnable.Count);
         for (int i = 0; i < returnable.Count; i++)
         {
-            Debug.Log(returnable[i]);
             returnable[i] /= total;
         }
         return returnable;
     }
 
-    [SerializeField]GameObject producedMeal;
+    public GameObject producedMeal;
 
     float[] quantatyRanger(float[] vs)
     {
@@ -702,7 +825,8 @@ public class PastaFeatures : MonoBehaviour
         meal.InputCount = quantatyRanger( setInputCount(inputList).ToArray());
         meal.Definition = mealDefSave;
         producedMeal.name = mealNameSave;
-        meal.unitTime = 50;
+        meal.unitTime = 8 + (effort/100f) * 12;
+        meal.image = mealImage;
     }
 
     public void AddToList()
@@ -759,7 +883,7 @@ public class PastaFeatures : MonoBehaviour
     // debug mode icin gerekli sadece
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftControl) && producedMeal)
+        /*if (Input.GetKeyDown(KeyCode.Q) && Input.GetKey(KeyCode.LeftControl) && producedMeal)
         {
             averageTaker();
             AddToList();
@@ -767,7 +891,7 @@ public class PastaFeatures : MonoBehaviour
             {
                 item.GetComponent<Station>().Outputs = Station.stationOutputList[item.GetComponent<Station>().stationType].ToArray();
             }
-        }
+        }*/
     }
 
    bool isInMarket(GameObject GO)
@@ -795,40 +919,147 @@ public class PastaFeatures : MonoBehaviour
     string _mealCode = "000";
     
     [SerializeField] Sprite[] imageList;
-    void setImage()
+    [SerializeField] GameObject iconGameobject;
+    Sprite mealImage = null;
+    public void setImage()
     {
         if(kind && shape && flour)
         {
-            if(pickedExtras.Count > 0)
+            if(pickedExtras.Count == 0)
             {
-                int shapeInt = 0;
-                int flourInt = 0;
-                int kindInt = 0;
-
-                for (int i = 0; i < _shapes.Count; i++)
+                if(kind.name == "Basic Pasta")
                 {
-                    if (_shapes[i] == shape)
+                    if(shape.name == "Noddle")
                     {
-                        shapeInt = i;
+                        mealImage = imageList[4];
+                    }else if(shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[0];
+                    }
+                }else if( kind.name == "Pomodoro")
+                {
+                    if (shape.name == "Noddle")
+                    {
+                        mealImage = imageList[6];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[2];
                     }
                 }
-
-                for (int i = 0; i < _flours.Count; i++)
+            }else
+            {
+                if (kind.name == "Basic Pasta")
                 {
-                    if (_flours[i] == flour)
+                    if (shape.name == "Noddle")
                     {
-                        flourInt = i;
+                        mealImage = imageList[5];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[1];
                     }
                 }
-
-                for (int i = 0; i < _kinds.Count; i++)
+                else if (kind.name == "Pomodoro")
                 {
-                    if (_kinds[i] == kind)
+                    if (shape.name == "Noddle")
                     {
-                        kindInt = i;
+                        mealImage = imageList[7];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[3];
                     }
                 }
             }
+        }else if(kind && shape)
+        {
+            if (pickedExtras.Count == 0)
+            {
+                if (kind.name == "Basic Pasta")
+                {
+                    if (shape.name == "Noddle")
+                    {
+                        mealImage = imageList[4];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[0];
+                    }
+                }
+                else if (kind.name == "Pomodoro")
+                {
+                    if (shape.name == "Noddle")
+                    {
+                        mealImage = imageList[6];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[2];
+                    }
+                }
+            }
+            else
+            {
+                if (kind.name == "Basic Pasta")
+                {
+                    if (shape.name == "Noddle")
+                    {
+                        mealImage = imageList[5];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[1];
+                    }
+                }
+                else if (kind.name == "Pomodoro")
+                {
+                    if (shape.name == "Noddle")
+                    {
+                        mealImage = imageList[7];
+                    }
+                    else if (shape.name == "Sphagetti")
+                    {
+                        mealImage = imageList[3];
+                    }
+                }
+            }
+        }else if (kind)
+        {
+            if (pickedExtras.Count > 0)
+            {
+                if (kind.name == "Basic Pasta")
+                {
+                    mealImage = imageList[5];
+                }
+                else if (kind.name == "Pomodoro")
+                {
+                    mealImage = imageList[7];
+                }
+            }
+            else
+            {
+                if (kind.name == "Basic Pasta")
+                {
+                    mealImage = imageList[4];
+                }
+                else if (kind.name == "Pomodoro")
+                {
+                    mealImage = imageList[6];
+                }
+            }
         }
+        else
+        {
+            mealImage = defaultImage;
+        }
+        iconGameobject.GetComponent<Image>().sprite = mealImage;
+        iconGameobject.GetComponent<Image>().color = Color.white;
+    }
+    [SerializeField] Sprite defaultImage;
+    private void Start()
+    {
+        if(imageList.Length >0)
+        setImage();
     }
 }

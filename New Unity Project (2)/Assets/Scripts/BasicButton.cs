@@ -70,6 +70,10 @@ public class BasicButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         canvasGroup.alpha = onClickAlpha;
 
+        if (techItem)
+        {
+            if (!donePrecondition) return;
+        }
         onClicked.Invoke();
 
         if (pickerItem)

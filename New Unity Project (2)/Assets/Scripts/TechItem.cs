@@ -227,5 +227,8 @@ public class TechItem : MonoBehaviour {
             transform.GetChild(6).GetChild(i).gameObject.SetActive(false);
         }
         transform.GetChild(6).GetChild(state).gameObject.SetActive(true);
+
+        if (state == 1) GetComponent<Image>().color = TechnologuTree.activatedColor;
+        else { GetComponent<Image>().color = Color.white; }
     }
 }

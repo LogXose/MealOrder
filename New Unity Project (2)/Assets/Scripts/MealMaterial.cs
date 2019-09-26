@@ -10,7 +10,7 @@ public class MealMaterial : MonoBehaviour {
     public string Definition;
     public float[] InputCount;
     public float unitTime;
-    public int minQuant = 0;
+    public int minQuant = 1;
     public bool countable = false;
     public float qualityIndex;
     public enum ReqForPasta

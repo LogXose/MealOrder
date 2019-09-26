@@ -191,47 +191,70 @@ public class ImageCreator : MonoBehaviour {
     {
         
         GameObject Output = RecipeController.GetRecipe();
-        if (!PlayerController.current.GetComponent<Station>().crafting)
+        /*if (PlayerController.current.GetComponent<Station>().crafting)
+        {*/
+        if (Output != null)
         {
-            if(Output != null)
+            if (Output.GetComponent<MealMaterial>() != null)
             {
-                if (Output.GetComponent<MealMaterial>() != null)
+                avatar.GetComponent<Image>().sprite = Output.GetComponent<MealMaterial>().image;
+                avatar.GetComponent<Image>().color = Color.white;
+                label.GetComponent<Text>().text = Output.name;
+                GameObject definition = transform.parent.GetChild(3).gameObject;
+                definition.GetComponent<Text>().text = Output.GetComponent<MealMaterial>().Definition;
+                GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+                if (!PlayerController.current.GetComponent<Station>().crafting)
                 {
-                    avatar.GetComponent<Image>().sprite = Output.GetComponent<MealMaterial>().image;
-                    avatar.GetComponent<Image>().color = Color.white;
-                    label.GetComponent<Text>().text = Output.name;
-                    GameObject definition = transform.parent.GetChild(3).gameObject;
-                    definition.GetComponent<Text>().text = Output.GetComponent<MealMaterial>().Definition;
-                    GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
                     int unitTimeTimesCount = Mathf.FloorToInt(Output.GetComponent<MealMaterial>().unitTime * Count);
                     int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
                     int second = unitTimeTimesCount % 60;
                     string _time = minute.ToString("00") + ":" + second.ToString("00");
                     Time.GetComponent<Text>().text = _time;
-                    transform.parent.GetChild(11).GetComponent<Text>().text = "gr";
-                    transform.parent.GetChild(11).GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
                 }
-                else if (Output.GetComponent<Meal>() != null)
+                else
                 {
-                    avatar.GetComponent<Image>().sprite = Output.GetComponent<Meal>().image;
-                    avatar.GetComponent<Image>().color = Color.white;
-                    label.GetComponent<Text>().text = Output.name;
-                    GameObject definition = transform.parent.GetChild(3).gameObject;
-                    definition.GetComponent<Text>().text = Output.GetComponent<Meal>().Definition;
-                    GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+                    float unitTimeTimesCount = PlayerController.current.GetComponent<Station>().Counter;
+                    int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
+                    int second = (int)unitTimeTimesCount % 60;
+                    string _time = minute.ToString("00") + ":" + second.ToString("00");
+                    Time.GetComponent<Text>().text = _time;
+                }
+                transform.parent.GetChild(11).GetComponent<Text>().text = "gr";
+                transform.parent.GetChild(11).GetComponent<Text>().alignment = TextAnchor.MiddleCenter;
+            }
+            else if (Output.GetComponent<Meal>() != null)
+            {
+                avatar.GetComponent<Image>().sprite = Output.GetComponent<Meal>().image;
+                avatar.GetComponent<Image>().color = Color.white;
+                label.GetComponent<Text>().text = Output.name;
+                GameObject definition = transform.parent.GetChild(3).gameObject;
+                definition.GetComponent<Text>().text = Output.GetComponent<Meal>().Definition;
+                GameObject Time = transform.parent.GetChild(10).GetChild(0).gameObject;
+                if (!PlayerController.current.GetComponent<Station>().crafting)
+                {
                     int unitTimeTimesCount = Mathf.FloorToInt(Output.GetComponent<Meal>().unitTime * Count);
                     int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
                     int second = unitTimeTimesCount % 60;
                     string _time = minute.ToString("00") + ":" + second.ToString("00");
                     Time.GetComponent<Text>().text = _time;
-                    transform.parent.GetChild(11).GetComponent<Text>().text = "Por.";
-                    transform.parent.GetChild(11).GetComponent<Text>().alignment = TextAnchor.MiddleRight;
                 }
                 else
                 {
-                    avatar.GetComponent<Image>().sprite = defaultSprite;
+                    float unitTimeTimesCount = PlayerController.current.GetComponent<Station>().Counter;
+                    int minute = Mathf.FloorToInt(unitTimeTimesCount / 60);
+                    int second = (int)unitTimeTimesCount % 60;
+                    string _time = minute.ToString("00") + ":" + second.ToString("00");
+                    Time.GetComponent<Text>().text = _time;
                 }
+
+                transform.parent.GetChild(11).GetComponent<Text>().text = "Por.";
+                transform.parent.GetChild(11).GetComponent<Text>().alignment = TextAnchor.MiddleRight;
             }
+            else
+            {
+                avatar.GetComponent<Image>().sprite = defaultSprite;
+            }
+            //}
         }
        
 
@@ -308,6 +331,11 @@ public class ImageCreator : MonoBehaviour {
     private void Start()
     {
         stationCap = GameObject.FindGameObjectWithTag("StationCapacity");
+        if (PlayerController.current)
+        {
+            Station.ButtonGO = GameObject.FindGameObjectWithTag("ButtonGO");
+
+        }
     }
 
     public static void updateStationCapacityText()

@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class Order : MonoBehaviour {
     public static Order orderInstance;
+    public static float advertiseStartTime = 0f;
+    public static bool advertisementsOn = false;
+    public static float advertiseTime = 0f;
+    public static float adsPower = 1f;
     /*public static int PotantielCustomerCount = 50;
     public static float OnlineCustomerChance = 0.09f;
     public static float hungryCustomerChance = 0.05f;
@@ -33,6 +37,7 @@ public class Order : MonoBehaviour {
     [SerializeField] float zamanBoleni = 200f;
     float dakikaAyiraci;
     [SerializeField] float siparisOlusturmaIhtimaliUstBandi = 10f;
+    [SerializeField] GameObject adsGO;
     public struct CommentStruct
     {
         public float point;
@@ -47,6 +52,7 @@ public class Order : MonoBehaviour {
     public static GameObject orderAlarm;
     public GameObject _orderAlarm;
     public static GameObject ServiceStation;
+    public GameObject servis;
     public class MealOrder
     {
         public GameObject uiPrefab;
@@ -67,6 +73,9 @@ public class Order : MonoBehaviour {
         private bool finisher = false;
         private bool cancelOrder = false;
         private bool countDownDistance;
+        float expectation = 0;
+        int expecSec = 0;
+        int expecMin = 0;
         public Segmentation.CustomerSegmentation CustomerSegmentation;
         public CommentStruct commentStruct;
         public bool isItAvaiable()
@@ -91,16 +100,18 @@ public class Order : MonoBehaviour {
             if(!paused && started) spendedTime += Time.deltaTime;
             int sec = (int)spendedTime % 60;
             int min = (int)spendedTime / 60;
-            string time = min.ToString("0") + ":" + sec.ToString("00") + "   Expected Delivery Time: 5:00";
+            string time = min.ToString("0") + ":" + sec.ToString("00") + "   Expected Delivery Time: "+ expecMin.ToString("0") + ":" + expecSec.ToString("00");
             if(ui != null)
             ui.transform.GetChild(3).GetComponent<Text>().text = time;
+            Debug.Log(ServiceStation.name);
             if (completed)
             {
                 ui.transform.GetChild(6).gameObject.SetActive(false);
                 paused = true;
                 Finisher(false);
-                for (int i = 0; i < Count; i++)
-                {
+                Debug.Log(ServiceStation.name);
+                for (int i = 0; i < ServiceStation.transform.GetChild(3).childCount; i++)
+                {   
                     ServiceStation.transform.GetChild(3).GetChild(i).gameObject.SetActive(true);
                 }
                 ServiceStation.GetComponent<Animator>().SetTrigger("Work");
@@ -124,18 +135,21 @@ public class Order : MonoBehaviour {
                 paused = true;
                 Finisher(true);
             }
-            Color blue = ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color;
-            if (isItAvaiable())
+            if (ui)
             {
-                blue.a = 1;
-                ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color = blue;
-                ui.transform.GetChild(6).GetComponent<BasicButton>().enabled = true;
-            }
-            else
-            {
-                blue.a = 0.2f;
-                ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color = blue;
-                ui.transform.GetChild(6).GetComponent<BasicButton>().enabled = false;
+                Color blue = ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color;
+                if (isItAvaiable())
+                {
+                    blue.a = 1;
+                    ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color = blue;
+                    ui.transform.GetChild(6).GetComponent<BasicButton>().enabled = true;
+                }
+                else
+                {
+                    blue.a = 0.2f;
+                    ui.transform.GetChild(6).GetChild(0).GetComponent<Image>().color = blue;
+                    ui.transform.GetChild(6).GetComponent<BasicButton>().enabled = false;
+                }
             }
         }
         public void Initialize()
@@ -150,6 +164,28 @@ public class Order : MonoBehaviour {
             ui.transform.GetChild(2).GetComponent<Image>().sprite = sprite;
             ui.transform.GetChild(0).GetComponent<Text>().text = name;
             ui.transform.GetChild(4).GetComponent<Text>().text = Count.ToString();
+            switch (CustomerSegmentation)
+            {
+                case Segmentation.CustomerSegmentation.oldies:
+                    expectation = Random.Range(420, 480);
+                    break;
+                case Segmentation.CustomerSegmentation.students:
+                    expectation = Random.Range(300, 420);
+                    break;
+                case Segmentation.CustomerSegmentation.whiteCollars:
+                    expectation = Random.Range(300, 360);
+                    break;
+                case Segmentation.CustomerSegmentation.families:
+                    expectation = Random.Range(360, 420);
+                    break;
+                case Segmentation.CustomerSegmentation.richies:
+                    expectation = Random.Range(420, 480);
+                    break;
+                default:
+                    break;
+            }
+            expecSec = (int)expectation % 60;
+            expecMin = (int)expectation / 60;
         }
         private void Finisher(bool negative)
         {
@@ -159,12 +195,15 @@ public class Order : MonoBehaviour {
             }
             else
             {
+                
                 Meal _meal = meal.GetComponent<Meal>();
                 commentStruct = new CommentStruct(); 
-                commentStruct.point = _meal.points[CustomerSegmentation] * ((zaman - _meal.createdTime) / _meal.createdTime) * Random.Range(0.8f, 1.2f);
+                commentStruct.point = _meal.points[CustomerSegmentation] * Random.Range(0.8f, 1.2f);
                 commentStruct.comment = CommentDetail(commentStruct.point);
                 commentStruct.name = NameProducer();
                 MealList.points.Add(commentStruct);
+                Debug.Log("point =" + _meal.points[CustomerSegmentation] + " ,zaman =" + zaman + "creating time=" + _meal.createdTime);
+                Debug.Log(MealList.points[0].comment);
             }
         }
     }
@@ -221,6 +260,31 @@ public class Order : MonoBehaviour {
                 CreateOrder(orderPrefab, _meal: meal);
             }
         }*/
+        if (advertisementsOn)
+        {
+            if (advertiseTime > 0)
+            {
+                advertiseTime -= Time.deltaTime;
+                reklam = adsPower;
+                adsGO.SetActive(true);
+                int _saat = Mathf.FloorToInt(advertiseTime / zamanBoleni) % 24;
+                int _dakika = Mathf.FloorToInt((advertiseTime % zamanBoleni) / dakikaAyiraci);
+                string _time = _saat.ToString("00") + ":" + _dakika.ToString("00");
+                adsGO.transform.GetChild(0).GetComponent<Text>().text = _time;
+            }
+            else
+            {
+                adsGO.SetActive(false);
+                reklam = 1;
+                advertisementsOn = false;
+            }
+        }
+        else
+        {
+            adsGO.SetActive(false);
+            reklam = 1;
+            advertisementsOn = false;
+        }
         rastgeleDusus();
         zaman += Time.deltaTime;
         saat = Mathf.FloorToInt(zaman / zamanBoleni) % 24;
@@ -230,7 +294,7 @@ public class Order : MonoBehaviour {
         potansiyelSayiP = Mathf.FloorToInt(saatlikDegisken[saat] * Mathf.Log10(yemekCesidi + 10) * reklam);
         artisHiziC = (potansiyelSayiP - anlikSayiA) * incSabit * Time.deltaTime;
         anlikSayiA += artisHiziC;
-        Debug.Log(potansiyelSayiP);
+        //Debug.Log(potansiyelSayiP);
         if(Mathf.FloorToInt(anlikSayiA)> Mathf.FloorToInt(anlikSave))
         {
             anlikSayiArtisi();
@@ -272,9 +336,10 @@ public class Order : MonoBehaviour {
     {
         orderAlarm = _orderAlarm;
         orderInstance = this;
-        ServiceStation = GameObject.FindGameObjectWithTag("delivery");
+        //ServiceStation = GameObject.FindGameObjectWithTag("delivery");
         anlikSayi.text = Mathf.FloorToInt(anlikSayiA).ToString();
         dakikaAyiraci = zamanBoleni / 60f;
+        ServiceStation = servis;
     }
     void anlikSayiArtisi()
     {
@@ -292,12 +357,10 @@ public class Order : MonoBehaviour {
     }
     void SiparisOlusturmaLotosu()
     {
-        Debug.Log("fonksiyon Calisiyor");
         for (int i = 0; i < anlikSayiA; i++)
         {
             float rastgele = Random.Range(0f, siparisOlusturmaIhtimaliUstBandi);
-            float ihtimal = availableMeals.Count* reklam * Mathf.Pow( averageProfit(),3); //(* liste sayisi) gibi bir algoritma kurulmasi gerekli.
-            Debug.Log("rastgele=" + rastgele + "  ihtimal=" + ihtimal);
+            float ihtimal = availableMeals.Count* reklam * Mathf.Pow( averageProfit(),1.5f); //(* liste sayisi) gibi bir algoritma kurulmasi gerekli.
             if(ihtimal > rastgele * 2)
             {
                 float toplam = 0;
@@ -312,7 +375,7 @@ public class Order : MonoBehaviour {
                     toplam += item.GetComponent<Meal>().realAveragePoint;
                     if(altRastgele <= toplam)
                     {
-                        Segmentation.CustomerSegmentation _segmentation = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().region.segmentation(Random.Range(0, 100));
+                        Segmentation.CustomerSegmentation _segmentation = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().getRegion().segmentation(Random.Range(0, 100));
                         CreateOrder(orderPrefab, 2, item, segmentasyon: _segmentation);
                     }
                 }
@@ -334,7 +397,7 @@ public class Order : MonoBehaviour {
                     Debug.Log("alt toplam= " + toplam + " alt Rastgele=" + altRastgele);
                     if (altRastgele <= toplam)
                     {
-                        Segmentation.CustomerSegmentation _segmentation = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().region.segmentation(Random.Range(0, 100));
+                        Segmentation.CustomerSegmentation _segmentation = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().getRegion().segmentation(Random.Range(0, 100));
                         CreateOrder(orderPrefab, 1, item, segmentasyon: _segmentation);
                     }
                 }

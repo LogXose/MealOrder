@@ -21,6 +21,7 @@ public class PlayerSlot : MonoBehaviour,IPointerClickHandler,IDragHandler,IEndDr
     void Start()
     {
         normalLocalPos = transform.localPosition;
+        if(adjusters.Contains(adjuster))
         adjusters.Add(adjuster);
     }
 
@@ -161,6 +162,8 @@ public class PlayerSlot : MonoBehaviour,IPointerClickHandler,IDragHandler,IEndDr
     {
         bool execution = false;
         InventoryOfPlayer.BackTransaction(represent, sendQuantaty,out execution);
+        adjuster.SetActive(false);
+        PlayerController.kralinYarra = true;        
         if(execution)
         Station.Transaction(represent, sendQuantaty);
     }
