@@ -20,6 +20,7 @@ public class Tutorial : MonoBehaviour {
     [SerializeField] GameObject[] quest7;
     public static Dictionary<int, bool> boolList;
     public static bool refreshed = false;
+    static bool tutorialInDemand = false;
 
     private void Start()
     {
@@ -27,6 +28,7 @@ public class Tutorial : MonoBehaviour {
         InitializeQuest();
         SetLevelNoText();
         AccomplishQuests();
+        if (!tutorialInDemand) gameObject.SetActive(false);
     }
 
     private void Update()
